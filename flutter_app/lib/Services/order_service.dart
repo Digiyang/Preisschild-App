@@ -1,6 +1,6 @@
-import 'package:flutter_app/db_connector.dart';
+import 'package:flutter_app/data_access/db_connector.dart';
 
-import 'order_dao.dart';
+import '../data_access/order_dao.dart';
 
 typedef OrderResponseCallback = void Function(List<OrderDao> details);
 

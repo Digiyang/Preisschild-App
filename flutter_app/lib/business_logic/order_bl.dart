@@ -1,5 +1,5 @@
-import 'package:flutter_app/order_dao.dart';
-import 'package:flutter_app/order_service.dart';
+import 'package:flutter_app/data_access/order_dao.dart';
+import 'package:flutter_app/Services/order_service.dart';
 
 class OrderBL {
 

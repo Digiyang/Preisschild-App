@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/order_bl.dart';
-import 'package:flutter_app/order_dao.dart';
+import 'package:flutter_app/business_logic/order_bl.dart';
+import 'package:flutter_app/data_access/order_dao.dart';
 import 'package:flutter_app/widgets/navigator.dart';
 import 'package:flutter_app/blocs/appBlocs.dart';
 import 'package:flutter_app/widgets/HomeScreen.dart';
@@ -16,11 +16,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Preisschild',
         home: HomeScreen(),
+        // home: MyHomePage(),
       ),
     );
   }
 }
 
+// for temporary testing
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
