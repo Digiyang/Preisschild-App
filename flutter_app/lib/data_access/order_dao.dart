@@ -58,24 +58,26 @@ class OrderDao {
 
   static List<OrderDao> convert(String v) {
     List<String> lines = v.split("\n");
-    bool isHeader = false;
-    var order_details = [];
+    List<OrderDao> order_details = [];
+
     for (String l in lines) {
       if (l.contains("|")) {
-        if (!isHeader) {
-          isHeader = true;
+
+        if (l.contains("order_id")) {
           continue;
         }
+
         List<String> values = l.split("|");
-        order_details.add(OrderDao(values[0].trim(),
-                                    DateTime.parse(values[1].trim()),
-                                    double.parse(values[2].trim()),
-                                    values[3].trim(),
+        order_details.add(OrderDao(values[1].trim(),
+                                    DateTime.parse(values[2].trim()),
+                                    double.parse(values[3].trim()),
                                     values[4].trim(),
-                                    int.parse(values[5].trim()),
-                                    values[6].trim()));
+                                    values[5].trim(),
+                                    int.parse(values[6].trim()),
+                                    values[7].trim()));
       }
     }
+
     return order_details;
   }
 }

@@ -5,11 +5,25 @@ class OrderBL {
 
   final OrderService service = OrderService();
 
-  List<OrderDao> get_order_details() {
-  // List<OrderDao> get_order_details() async {
-    // await service.get_order_details("order_id", (List<OrderDao> details) {
-    //
-    // });
-    return List.empty();
+  Future<List<OrderDao>> get_order_details(String orderId) async {
+    List<OrderDao> details = await service.get_order_details(orderId);
+    return Future.value(details);
+  }
+
+}
+
+void main() async {
+  List<OrderDao> details = await OrderBL().get_order_details("orderId");
+  print("Resultset length: " + details.length.toString());
+  print("------------------------------------------");
+  for (OrderDao o in details) {
+    print(o.orderId);
+    print(o.orderDate);
+    print(o.orderStatus);
+    print(o.totalPrice);
+    print(o.itemName);
+    print(o.itemQuantity);
+    print(o.formattedItemPrice);
+    print("------------------------------------------");
   }
 }

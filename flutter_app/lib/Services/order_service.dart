@@ -1,14 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_app/data_access/db_connector.dart';
-
-import '../data_access/order_dao.dart';
-
-typedef OrderResponseCallback = void Function(List<OrderDao> details);
+import 'package:flutter_app/data_access/order_dao.dart';
 
 class OrderService {
 
   final DBConnector connector = DBConnector();
+  StreamController<OrderDao> orderStream = StreamController();
 
-  void get_order_details(String order_id, OrderResponseCallback response) async {
+  Future<List<OrderDao>> get_order_details(String order_id) async {
 
     var query = "SELECT ord.order_id, " +
                         "ord.date as order_date, " +
@@ -21,8 +21,27 @@ class OrderService {
                       "Preisschild.tbl_order as ord, " +
                       "Preisschild.tbl_product as prd " +
                 "WHERE ord_itm.order_id = ord.id " +
-                "AND	ord_itm.product_id = prd.id;";
+                "AND ord_itm.product_id = prd.id";
 
-    var exitcode = await connector.execute_through_ssh(query, (_ , v) => response(OrderDao.convert(v)));
+    var exitcode = await connector.execute_through_ssh(query, (_ , v) {
+      if (v.trim() == "logout") {
+        orderStream.close();
+      }
+
+      List<OrderDao> details = OrderDao.convert(v);
+
+      if (details.length > 0) {
+        for (OrderDao od in details) {
+          orderStream.add(od);
+        }
+      }
+    });
+
+    List<OrderDao> details = [];
+    await for (OrderDao o in orderStream.stream) {
+      details.add(o);
+    }
+
+    return Future.value(details);
   }
 }

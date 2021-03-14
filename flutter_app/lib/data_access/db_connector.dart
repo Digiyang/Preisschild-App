@@ -99,10 +99,10 @@ class DBConnector {
         startUpCommand.write(db_credentials["db_name"]);
       }
 
-      startUpCommand.writeln("");
-      startUpCommand.writeln(query);
+      startUpCommand.write(" -e \"");
+      startUpCommand.write(query);
 
-      startUpCommand.writeln("quit");
+      startUpCommand.writeln("\"");
       startUpCommand.writeln("logout");
 
       client.startupCommand = startUpCommand.toString();
