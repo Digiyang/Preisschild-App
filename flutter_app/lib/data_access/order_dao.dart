@@ -7,12 +7,9 @@ class OrderDao {
   int item_quantity;
   String item_price;
 
-  OrderDao(String order_id,
-            DateTime order_date,
-            double total_price,
-            String order_status,
-            String item_name,
-            int item_quantity,
+  OrderDao(String order_id, DateTime order_date,
+            double total_price, String order_status,
+            String item_name, int item_quantity,
             String item_price) {
 
     this.order_id = order_id;
