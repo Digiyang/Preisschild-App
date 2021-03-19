@@ -32,14 +32,17 @@ dependencies:
   geolocator: ^7.0.1
   http: ^0.13.0
   dartssh: ^1.0.3+3
+  speech_to_text: ^3.1.0
 
 dependency_overrides:
   http: ^0.12.2
+  plugin_platform_interface: ^1.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  integration_test:
+    sdk: flutter
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
