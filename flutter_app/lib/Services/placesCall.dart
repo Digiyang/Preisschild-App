@@ -5,7 +5,7 @@ import 'package:flutter_app/template/where.dart';
 import 'package:http/http.dart' as http;
 
 class PlacesCall {
-  final apiKey = 'AIzaSyB2G3zsHfwXxzvrR175Htiz-7c_AI8IXTE';
+  final apiKey = 'YOUR KEY';
 
   Future<List<Places>> autocomplete(String search) async {
     var url = Uri.parse(
