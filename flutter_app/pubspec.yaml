@@ -33,6 +33,7 @@ dependencies:
   http: ^0.13.0
   dartssh: ^1.0.3+3
   speech_to_text: ^3.1.0
+  flutter_tts: ^3.0.0
 
 dependency_overrides:
   http: ^0.12.2
