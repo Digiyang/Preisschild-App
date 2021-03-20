@@ -1,6 +1,6 @@
-import 'package:bakery/screens/bar.dart';
-import 'package:bakery/screens/body.dart';
-import 'package:bakery/widgets/navigator.dart';
+import 'package:flutter_app/screens/bar.dart';
+import 'package:flutter_app/screens/body.dart';
+import 'package:flutter_app/widgets/navigator.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {

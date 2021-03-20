@@ -1,11 +1,11 @@
 import 'dart:ffi';
 
-import 'package:bakery/Bakerys/Weichardt/components/category.dart';
-import 'package:bakery/Bakerys/Weichardt/components/details.dart';
-import 'package:bakery/Bakerys/Weichardt/screens/shopScreen.dart';
-import 'package:bakery/screens/bar.dart';
-import 'package:bakery/screens/components/searchBar.dart';
-import 'package:bakery/widgets/navigator.dart';
+import 'package:flutter_app/Bakerys/Weichardt/components/category.dart';
+import 'package:flutter_app/Bakerys/Weichardt/components/details.dart';
+import 'package:flutter_app/Bakerys/Weichardt/screens/shopScreen.dart';
+import 'package:flutter_app/screens/bar.dart';
+import 'package:flutter_app/screens/components/searchBar.dart';
+import 'package:flutter_app/widgets/navigator.dart';
 import 'package:flutter/material.dart';
 
 class ListPage extends StatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:bakery/Bakerys/Weichardt/components/category.dart';
+import 'package:flutter_app/Bakerys/Weichardt/components/category.dart';
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {

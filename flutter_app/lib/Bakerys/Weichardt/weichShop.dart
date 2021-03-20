@@ -1,6 +1,6 @@
-import 'package:bakery/Bakerys/Weichardt/screens/shopScreen.dart';
-import 'package:bakery/screens/bar.dart';
-import 'package:bakery/widgets/navigator.dart';
+import 'package:flutter_app/Bakerys/Weichardt/screens/shopScreen.dart';
+import 'package:flutter_app/screens/bar.dart';
+import 'package:flutter_app/widgets/navigator.dart';
 import 'package:flutter/material.dart';
 
 class WeichShop extends StatelessWidget {

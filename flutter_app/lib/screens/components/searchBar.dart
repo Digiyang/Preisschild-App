@@ -1,4 +1,4 @@
-import 'package:bakery/const.dart';
+import 'package:flutter_app/const.dart';
 import 'package:flutter/material.dart';
 
 class SearchBar extends StatelessWidget {

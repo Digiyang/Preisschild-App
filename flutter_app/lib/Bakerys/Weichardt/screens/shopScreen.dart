@@ -1,4 +1,4 @@
-import 'package:bakery/screens/components/searchBar.dart';
+import 'package:flutter_app/screens/components/searchBar.dart';
 import 'package:flutter/material.dart';
 
 class ShopScreen extends StatelessWidget {

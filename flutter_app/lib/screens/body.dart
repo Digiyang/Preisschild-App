@@ -1,6 +1,6 @@
-import 'package:bakery/Bakerys/Weichardt/components/list.dart';
-import 'package:bakery/Bakerys/Weichardt/weichShop.dart';
-import 'package:bakery/const.dart';
+import 'package:flutter_app/Bakerys/Weichardt/components/list.dart';
+import 'package:flutter_app/Bakerys/Weichardt/weichShop.dart';
+import 'package:flutter_app/const.dart';
 import 'package:flutter/material.dart';
 
 class Body extends StatelessWidget {
