@@ -34,6 +34,7 @@ dependencies:
   dartssh: ^1.0.3+3
   speech_to_text: ^3.1.0
   flutter_tts: ^3.0.0
+  smooth_star_rating: ^1.1.1
 
 dependency_overrides:
   http: ^0.12.2
@@ -56,9 +57,22 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+     - assets/images/icons8-baguette-100.png
+     - assets/images/icons8-bakery-100.png
+     - assets/images/icons8-birthday-cake-100.png
+     - assets/images/icons8-bread-100.png
+     - assets/images/icons8-bread-and-rye-100.png
+     - assets/images/icons8-cake-100.png
+     - assets/images/icons8-croissant-100.png
+     - assets/images/icons8-kawaii-bread-100.png
+     - assets/images/icons8-kawaii-cupcake-100.png
+     - assets/images/icons8-macaron-100.png
+     - assets/images/icons8-pie-100.png
+     - assets/images/icons8-search.gif
+     - assets/images/Weichardt.jpg
+     - assets/images/Beumer.jpg
+     - assets/images/Christa.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
