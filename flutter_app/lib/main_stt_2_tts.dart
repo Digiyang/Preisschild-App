@@ -13,16 +13,16 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import 'business_logic/product_bl.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(VocalAssistant());
 
-class MyApp extends StatefulWidget {
+class VocalAssistant extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _VocalAssistantState createState() => _VocalAssistantState();
 }
 
 enum TtsState { playing, stopped, paused, continued }
 
-class _MyAppState extends State<MyApp> {
+class _VocalAssistantState extends State<VocalAssistant> {
   bool _hasSpeech = false;
   // sounds in DB. need to check from low frequency to high frequency
   double level = 0.0;

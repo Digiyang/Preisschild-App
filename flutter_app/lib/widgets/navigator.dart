@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/main_stt_2_tts.dart';
 
 class NavDrawer extends StatelessWidget {
+
+  VocalAssistant vocalAssistant = VocalAssistant();
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -31,7 +35,7 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.record_voice_over),
             title: Text('Vocal Assistant'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) { return vocalAssistant; }))},
           ),
           ListTile(
             leading: Icon(Icons.settings),
