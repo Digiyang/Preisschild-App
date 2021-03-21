@@ -21,7 +21,7 @@ class Body extends StatelessWidget {
                   },                                              
                   child: Container(
                       margin: EdgeInsets.all(20),
-                      padding: EdgeInsets.symmetric(horizontal: 190, vertical: 80),
+                      padding: EdgeInsets.symmetric(horizontal: 170, vertical: 75),
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage("assets/images/Weichardt.jpg"),
@@ -39,9 +39,16 @@ class Body extends StatelessWidget {
                   ),
                 ),
                 Text("Weichardt-Brot", style: TextStyle(color: Colors.white, fontSize: 25),),
-                Container(
+                InkWell(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WeichShop())
+                    );
+                  }, 
+                child:Container(
                     margin: EdgeInsets.all(20),
-                    padding: EdgeInsets.symmetric(horizontal: 190, vertical: 80),
+                    padding: EdgeInsets.symmetric(horizontal: 170, vertical: 75),
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage("assets/images/Beumer.jpg"),
@@ -58,10 +65,11 @@ class Body extends StatelessWidget {
                       ], 
                   ),
                 ),
+                ),
                 Text("Beumer & Lutum Bäckerei", style: TextStyle(color: Colors.white, fontSize: 25),),
                 Container(
                     margin: EdgeInsets.all(20),
-                    padding: EdgeInsets.symmetric(horizontal: 190, vertical: 80),
+                    padding: EdgeInsets.symmetric(horizontal: 170, vertical: 75),
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage("assets/images/Christa.jpg"),
