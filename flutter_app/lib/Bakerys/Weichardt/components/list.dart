@@ -39,7 +39,7 @@ class _ListState extends State<ListPage> {
   }
 
   @override
-  Void initState(){
+  void initState(){
     _controller = PageController(viewportFraction: 0.6);
     _controller.addListener(_listListener);
     super.initState();
