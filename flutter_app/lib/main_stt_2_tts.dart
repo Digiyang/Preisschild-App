@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/data_access/product_dao.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -40,9 +41,9 @@ class _VocalAssistantState extends State<VocalAssistant> {
   /////////////////==:TTS:==//////////////////////////////////////
   FlutterTts flutterTts;
   String language;
-  double volume = 0.6;
-  double pitch = 1.0;
-  double rate = 0.36;
+  double volume = 0.64;
+  double pitch = 1.2;
+  double rate = 0.76;
   bool isCurrentLanguageInstalled = false;
 
   String _newVoiceText;
@@ -63,7 +64,18 @@ class _VocalAssistantState extends State<VocalAssistant> {
   @override
   void initState() {
     super.initState();
+
+    requestForPermissions();
     initTts();
+  }
+
+  Future<void> requestForPermissions() async {
+    if (await Permission.speech.request().isGranted) {
+      print("Speech permission is granted.");
+    }
+    if (await Permission.microphone.request().isGranted) {
+      print("Microphone permission is granted.");
+    }
   }
 
   initTts() {
@@ -160,11 +172,14 @@ class _VocalAssistantState extends State<VocalAssistant> {
     var hasSpeech = await speech.initialize(
         onError: errorListener, onStatus: statusListener, debugLogging: true);
     if (hasSpeech) {
-      _localeNames = await speech.locales();
+      // _localeNames = await speech.locales();
+
       _localeNames.add(LocaleName('en_US', 'English'));
       _localeNames.add(LocaleName('de_DE', 'Deutsch'));
 
-      var systemLocale = await speech.systemLocale();
+      // var systemLocale = await speech.systemLocale();
+      var systemLocale = LocaleName('de_DE', 'Deutsch');
+
       if (null != systemLocale) {
         _currentLocaleId = systemLocale.localeId;
       } else {
@@ -183,7 +198,7 @@ class _VocalAssistantState extends State<VocalAssistant> {
     // Welcome Text
     // Heartly Welcome to Bakery B
     _newVoiceText = "Herzlich Willkommen in der Bäckerei B";
-    _speak();
+    await _speak();
 
     if (!mounted) return;
 
@@ -432,7 +447,7 @@ class _VocalAssistantState extends State<VocalAssistant> {
 
     // _newVoiceText = result.recognizedWords;
 
-    _newVoiceText = _currentLocaleId == "en_US" ? "Here are breads you might like:" : "Hier sind Brote, die Ihnen gefallen könnten:";
+    _newVoiceText = _currentLocaleId == "en_US" ? "Here are breads you might like:" : "Hier sind frisch gebackene Brote für Sie:";
     _speak();
 
     setState(() {
@@ -468,7 +483,6 @@ class _VocalAssistantState extends State<VocalAssistant> {
   void _switchLang(selectedVal) {
     setState(() {
       _currentLocaleId = selectedVal;
-
       //TODO make generic by creating function
       language = _currentLocaleId;
       flutterTts.setLanguage(language);
