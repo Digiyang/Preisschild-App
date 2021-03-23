@@ -178,7 +178,7 @@ class _VocalAssistantState extends State<VocalAssistant> {
       _localeNames.add(LocaleName('de_DE', 'Deutsch'));
 
       // var systemLocale = await speech.systemLocale();
-      var systemLocale = LocaleName('de_DE', 'Deutsch');
+      var systemLocale;
 
       if (null != systemLocale) {
         _currentLocaleId = systemLocale.localeId;

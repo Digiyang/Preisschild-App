@@ -88,4 +88,23 @@ class ProductDao {
 
     return products;
   }
+
+  static List<String> convertCategory(String v) {
+    List<String> lines = v.split("\n");
+    List<String> categories = [];
+
+    for (String l in lines) {
+      if (l.contains("|")) {
+
+        if (l.contains("category")) {
+          continue;
+        }
+
+        List<String> values = l.split("|");
+        categories.add(values[1].trim());
+      }
+    }
+
+    return categories;
+  }
 }

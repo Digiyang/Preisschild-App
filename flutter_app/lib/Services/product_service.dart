@@ -7,6 +7,7 @@ class ProductService {
 
   final DBConnector connector = DBConnector();
   StreamController<ProductDao> productStream = StreamController();
+  StreamController<String> categoryStream = StreamController();
 
   // TODO try to make generic service function
   // TODO make generic function in connector class
@@ -36,8 +37,33 @@ class ProductService {
     return Future.value(details);
   }
 
-  Future<List<ProductDao>> get_products_by_category(String category) async {
-    var query = "SELECT * FROM Preisschild.tbl_product as prd WHERE prd.category = '$category'";
+  Future<List<String>> get_product_categories(int organizationId) async {
+    var query = "SELECT prd.category FROM Preisschild.tbl_product as prd WHERE prd.organization_id = $organizationId GROUP BY prd.category";
+
+    var exitcode = await connector.execute_through_ssh(query, (_ , v) {
+      if (v.trim() == "logout") {
+        categoryStream.close();
+      }
+
+      List<String> details = ProductDao.convertCategory(v);
+
+      if (details.length > 0) {
+        for (String c in details) {
+          categoryStream.add(c);
+        }
+      }
+    });
+
+    List<String> details = [];
+    await for (String c in categoryStream.stream) {
+      details.add(c);
+    }
+
+    return Future.value(details);
+  }
+
+  Future<List<ProductDao>> get_products_by_category(int organizationId, String category) async {
+    var query = "SELECT * FROM Preisschild.tbl_product as prd WHERE prd.organization_id = $organizationId AND prd.category = '$category'";
 
     var exitcode = await connector.execute_through_ssh(query, (_ , v) {
       if (v.trim() == "logout") {
