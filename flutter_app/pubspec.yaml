@@ -35,6 +35,7 @@ dependencies:
   speech_to_text: ^3.1.0
   flutter_tts: ^3.0.0
   smooth_star_rating: ^1.1.1
+  autocomplete_textfield: any
 
 dependency_overrides:
   http: ^0.12.2
@@ -73,6 +74,14 @@ flutter:
      - assets/images/Weichardt.jpg
      - assets/images/Beumer.jpg
      - assets/images/Christa.jpg
+     - assets/Weich/icons8-bagel-100.png
+     - assets/Weich/icons8-baguette-bread-100.png
+     - assets/Weich/icons8-bread-100.png
+     - assets/Weich/icons8-bread-loaf-100.png
+     - assets/Weich/icons8-hamburger-100.png
+     - assets/Weich/icons8-naan-100.png
+     - assets/Weich/icons8-pretzel-100.png
+     - assets/Weich/icons8-sandwich-100.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
