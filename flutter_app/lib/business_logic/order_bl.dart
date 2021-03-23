@@ -17,41 +17,41 @@ class OrderBL {
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_date(DateTime date) async {
-    List<OrderDao> details = await service.get_orders_by_date(date);
+  Future<List<OrderDao>> get_orders_by_date(int organizationId, DateTime date) async {
+    List<OrderDao> details = await service.get_orders_by_date(organizationId, date);
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_date_range(DateTime begin, DateTime end) async {
-    List<OrderDao> details = await service.get_orders_by_date_range(begin, end);
+  Future<List<OrderDao>> get_orders_by_date_range(int organizationId, DateTime begin, DateTime end) async {
+    List<OrderDao> details = await service.get_orders_by_date_range(organizationId, begin, end);
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_status(String status) async {
-    List<OrderDao> details = await service.get_orders_by_status(status);
+  Future<List<OrderDao>> get_orders_by_status(int organizationId, String status) async {
+    List<OrderDao> details = await service.get_orders_by_status(organizationId, status);
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_status_and_date(String status, DateTime date) async {
-    List<OrderDao> details = await service.get_orders_by_status_and_date(status, date);
+  Future<List<OrderDao>> get_orders_by_status_and_date(int organizationId, String status, DateTime date) async {
+    List<OrderDao> details = await service.get_orders_by_status_and_date(organizationId, status, date);
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_status_and_date_range(String status, DateTime begin, DateTime end) async {
-    List<OrderDao> details = await service.get_orders_by_status_and_date_range(status, begin, end);
+  Future<List<OrderDao>> get_orders_by_status_and_date_range(int organizationId, String status, DateTime begin, DateTime end) async {
+    List<OrderDao> details = await service.get_orders_by_status_and_date_range(organizationId, status, begin, end);
     return Future.value(details);
   }
 
-  Future<void> create_order(String orderId) async {
-    await service.create_order(orderId);
+  Future<void> create_order(int organizationId, String orderId) async {
+    await service.create_order(organizationId, orderId);
   }
 
   Future<void> create_order_item(String orderId, int productId, int quantity) async {
     await service.create_order_item(orderId, productId, quantity);
   }
 
-  Future<void> create_order_with_items(String orderId, List<OrderItem> items) async {
-    await service.create_order_with_items(orderId, items);
+  Future<void> create_order_with_items(int organizationId, String orderId, List<OrderItem> items) async {
+    await service.create_order_with_items(organizationId, orderId, items);
   }
 
   Future<void> update_order_status(String orderId) async {
@@ -61,25 +61,25 @@ class OrderBL {
 }
 
 void main() async {
-  List<OrderDao> details = await OrderBL().get_all_orders();
+  // List<OrderDao> details = await OrderBL().get_all_orders();
   // List<OrderDao> details = await OrderBL().get_orders_by_id("cd123456");
-  // List<OrderDao> details = await OrderBL().get_orders_by_date(DateTime.parse("2021-03-05"));
-  // List<OrderDao> details = await OrderBL().get_orders_by_status("RECEIVE");
-  // List<OrderDao> details = await OrderBL().get_orders_by_status_and_date("RECEIVE", DateTime.parse("2021-03-05"));
+  List<OrderDao> details = await OrderBL().get_orders_by_date(1, DateTime.parse("2021-03-05"));
+  // List<OrderDao> details = await OrderBL().get_orders_by_status(1, "RECEIVE");
+  // List<OrderDao> details = await OrderBL().get_orders_by_status_and_date(1, "RECEIVE", DateTime.parse("2021-03-05"));
 
   // OrderBL orderBL = OrderBL();
   //
-  // String orderId = "op123456";
+  // String orderId = "xx123456";
   // List<OrderItem> items = [OrderItem(1, 2), OrderItem(2, 2)];
 
-  // await orderBL.create_order_with_items(orderId, items);
+  // await orderBL.create_order_with_items(1, orderId, items);
   // List<OrderDao> details = await orderBL.get_orders_by_id(orderId);
 
-  // List<OrderDao> details = await orderBL.get_orders_by_date(DateTime.now());
-  // List<OrderDao> details = await orderBL.get_orders_by_status("CONFIRM");
+  // List<OrderDao> details = await orderBL.get_orders_by_date(1, DateTime.now());
+  // List<OrderDao> details = await orderBL.get_orders_by_status(1, "CONFIRM");
 
   // await orderBL.update_order_status(orderId);
-  // List<OrderDao> details = await orderBL.get_orders_by_status("RECEIVE");
+  // List<OrderDao> details = await orderBL.get_orders_by_status(1, "RECEIVE");
 
   print("Resultset length: " + details.length.toString());
   print("------------------------------------------");

@@ -17,7 +17,7 @@ class OrderService {
                                         "Preisschild.tbl_order as ord, " +
                                         "Preisschild.tbl_product as prd " +
                                   "WHERE ord_itm.order_id = ord.id " +
-                                  "AND ord_itm.product_id = prd.id";
+                                  "AND ord_itm.product_id = prd.id ";
 
   final DBConnector connector = DBConnector();
   StreamController<OrderDao> orderStream = StreamController();
@@ -76,7 +76,7 @@ class OrderService {
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_date(DateTime date) async {
+  Future<List<OrderDao>> get_orders_by_date(int organizationId, DateTime date) async {
 
     String str_date = date.year.toString() + "-" +
                     (date.month < 10 ? ("0" + date.month.toString()) : date.month.toString()) + "-" +
@@ -85,12 +85,13 @@ class OrderService {
     DateTime begin = DateTime.parse("$str_date 00:00:00");
     DateTime end = DateTime.parse("$str_date 23:59:59");
 
-    return get_orders_by_date_range(begin, end);
+    return get_orders_by_date_range(organizationId, begin, end);
   }
 
-  Future<List<OrderDao>> get_orders_by_date_range(DateTime begin, DateTime end) async {
+  Future<List<OrderDao>> get_orders_by_date_range(int organizationId, DateTime begin, DateTime end) async {
 
     var query = baseQuery +
+                " AND ord.organization_id = $organizationId " +
                 " AND ord.date >= '$begin' " +
                 " AND ord.date <= '$end'";
 
@@ -116,8 +117,8 @@ class OrderService {
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_status(String status) async {
-    var query = baseQuery + " AND ord.order_status = '$status'";
+  Future<List<OrderDao>> get_orders_by_status(int organizationId, String status) async {
+    var query = baseQuery + " AND ord.organization_id = $organizationId AND ord.order_status = '$status'";
 
     var exitcode = await connector.execute_through_ssh(query, (_ , v) {
       if (v.trim() == "logout") {
@@ -141,7 +142,7 @@ class OrderService {
     return Future.value(details);
   }
 
-  Future<List<OrderDao>> get_orders_by_status_and_date(String status, DateTime date) async {
+  Future<List<OrderDao>> get_orders_by_status_and_date(int organizationId, String status, DateTime date) async {
 
     String str_date = date.year.toString() + "-" +
                       (date.month < 10 ? ("0" + date.month.toString()) : date.month.toString()) + "-" +
@@ -150,11 +151,12 @@ class OrderService {
     DateTime begin = DateTime.parse("$str_date 00:00:00");
     DateTime end = DateTime.parse("$str_date 23:59:59");
 
-    return get_orders_by_status_and_date_range(status, begin, end);
+    return get_orders_by_status_and_date_range(organizationId, status, begin, end);
   }
 
-  Future<List<OrderDao>> get_orders_by_status_and_date_range(String status, DateTime begin, DateTime end) async {
+  Future<List<OrderDao>> get_orders_by_status_and_date_range(int organizationId, String status, DateTime begin, DateTime end) async {
     var query = baseQuery +
+                " AND ord.organization_id = $organizationId " +
                 " AND ord.order_status = '$status' " +
                 " AND ord.date >= '$begin' " +
                 " AND ord.date <= '$end'";
@@ -181,8 +183,8 @@ class OrderService {
     return Future.value(details);
   }
 
-  Future<void> create_order(String orderId) async {
-    var query = "INSERT INTO Preisschild.tbl_order(order_id, date) VALUES ('$orderId', CURRENT_TIMESTAMP)";
+  Future<void> create_order(int organizationId, String orderId) async {
+    var query = "INSERT INTO Preisschild.tbl_order(organization_id, order_id, date) VALUES ($organizationId, '$orderId', CURRENT_TIMESTAMP)";
     var exitcode = await connector.execute_through_ssh(query, (_ , v) {});
   }
 
@@ -191,8 +193,8 @@ class OrderService {
     var exitcode = await connector.execute_through_ssh(query, (_ , v) {});
   }
 
-  Future<void> create_order_with_items(String orderId, List<OrderItem> items) async {
-    var query = "INSERT INTO Preisschild.tbl_order(order_id, date) VALUES ('$orderId', CURRENT_TIMESTAMP); ";
+  Future<void> create_order_with_items(int organizationId, String orderId, List<OrderItem> items) async {
+    var query = "INSERT INTO Preisschild.tbl_order(organization_id, order_id, date) VALUES ($organizationId, '$orderId', CURRENT_TIMESTAMP); ";
     StringBuffer itemQuries = StringBuffer();
 
     for (OrderItem oi in items) {

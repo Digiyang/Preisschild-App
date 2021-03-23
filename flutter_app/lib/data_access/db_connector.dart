@@ -10,17 +10,17 @@ class DBConnector {
 
   // ignore: non_constant_identifier_names
   static final Map<String, String> ssh_credentials = {
-    "host": "YOUR IP",
-    "port": "-",
-    "login": "-",
-    "password": "-"
+    "host": "46.189.74.200",
+    "port": "22",
+    "login": "pi",
+    "password": "Digi4031-"
   };
 
   // ignore: non_constant_identifier_names
   static final Map<String, String> db_credentials = {
     "host": "localhost",
-    "login": "-",
-    "password": "-",
+    "login": "mahbubur",
+    "password": "Preisschild2021*",
     "db_name": "Preisschild"
   };
 
