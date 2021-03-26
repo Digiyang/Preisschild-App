@@ -91,16 +91,5 @@ class WeichList extends StatelessWidget {
         itemCount: bloc.inventory.length,
       ),
     );
-    /*return ListView.builder(
-      padding: const EdgeInsets.only(top: cartHeight),
-      itemCount: bloc.inventory.length,
-      itemBuilder: (context, index) {
-        return Container(
-          height: 100,
-          width: 100,
-          color: Colors.primaries[index % Colors.primaries.length],
-        );
-      },
-    );*/
   }
 }

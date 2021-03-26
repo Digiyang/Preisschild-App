@@ -5,7 +5,7 @@ import 'package:flutter_app/template/where.dart';
 import 'package:http/http.dart' as http;
 
 class PlacesCall {
-  final apiKey = 'YOUR KEY';
+  final apiKey = 'AIzaSyB2G3zsHfwXxzvrR175Htiz-7c_AI8IXTE';
 
   Future<List<Places>> autocomplete(String search) async {
     var url = Uri.parse(
@@ -23,5 +23,14 @@ class PlacesCall {
     var json = convert.jsonDecode(request.body);
     var jsonResult = json['result'] as Map<String, dynamic>;
     return Somewhere.fromJson(jsonResult);
+  }
+
+  Future<List<Somewhere>> getArea(double lat, double lng, String area) async {
+    var url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/textsearch/json?type=$area&location=$lat,$lng&rankby=distance&key=$apiKey');
+    var request = await http.get(url);
+    var json = convert.jsonDecode(request.body);
+    var jsonResult = json['results'] as List;
+    return jsonResult.map((place) => Somewhere.fromJson(place)).toList();
   }
 }

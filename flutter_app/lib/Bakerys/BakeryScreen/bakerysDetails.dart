@@ -1,20 +1,21 @@
-import 'package:flutter_app/Bakerys/Weichardt/components/category.dart';
+import 'package:flutter_app/Bakerys/BakeryScreen/bakerys.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/Bakerys/Weichardt/screens/shopInventoryScrenn.dart';
+import 'package:flutter_app/Bakerys/Weichardt/components/list.dart';
 
-class Details extends StatefulWidget {
-  final Category category;
+class BakerysDetails extends StatefulWidget {
+  final Bakery bakery;
 
-  const Details({
+  const BakerysDetails({
     Key key,
-    @required this.category,
+    @required this.bakery,
   }) : super(key: key);
 
   @override
-  _DetailsState createState() => _DetailsState();
+  _BakerysDetailsState createState() => _BakerysDetailsState();
 }
 
-class _DetailsState extends State<Details> with SingleTickerProviderStateMixin {
+class _BakerysDetailsState extends State<BakerysDetails>
+    with SingleTickerProviderStateMixin {
   AnimationController _controller;
 
   @override
@@ -36,16 +37,16 @@ class _DetailsState extends State<Details> with SingleTickerProviderStateMixin {
     return Stack(
       children: [
         Hero(
-            tag: "background_${widget.category.title}",
+            tag: "background_${widget.bakery.title}",
             child: Container(
-              color: Color(widget.category.color),
+              color: Color(widget.bakery.color),
             )),
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            backgroundColor: Color(widget.category.color),
+            backgroundColor: Color(widget.bakery.color),
             elevation: 0,
-            title: Text(widget.category.title),
+            title: Text(widget.bakery.title),
             leading: CloseButton(),
           ),
           body: SingleChildScrollView(
@@ -54,16 +55,15 @@ class _DetailsState extends State<Details> with SingleTickerProviderStateMixin {
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ShopInventoryHome()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ListPage()));
                   },
                   child: Hero(
-                    tag: "image_${widget.category.title}",
+                    tag: "image_${widget.bakery.title}",
                     child: Image.asset(
-                      widget.category.link,
-                      height: MediaQuery.of(context).size.height / 2,
+                      widget.bakery.link,
+                      width: MediaQuery.of(context).size.height / 2,
+                      height: 100,
                     ),
                   ),
                 ),
@@ -74,17 +74,6 @@ class _DetailsState extends State<Details> with SingleTickerProviderStateMixin {
                     offset: Offset.lerp(
                         Offset(0.0, 200.0), Offset.zero, _controller.value),
                     child: widget,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      widget.category.details,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
                   ),
                 ),
               ],

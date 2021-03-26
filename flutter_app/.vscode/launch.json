@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "program": "lib/mainShop.dart",
+            "program": "lib/mainUI.dart",
             "name": "flutter_app",
             "request": "launch",
             "type": "dart"

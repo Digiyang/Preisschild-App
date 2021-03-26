@@ -1,19 +1,17 @@
-import 'package:flutter_app/Bakerys/Weichardt/components/category.dart';
-import 'package:flutter_app/Bakerys/Weichardt/components/details.dart';
-import 'package:flutter_app/screens/bar.dart';
-import 'package:flutter_app/widgets/navigator.dart';
+import 'package:flutter_app/Bakerys/BakeryScreen/bakerys.dart';
+import 'package:flutter_app/Bakerys/BakeryScreen/bakerysDetails.dart';
 import 'package:flutter/material.dart';
 
-class ListPage extends StatefulWidget {
+class ListBakery extends StatefulWidget {
   @override
   _ListState createState() => _ListState();
 }
 
-class _ListState extends State<ListPage> {
+class _ListState extends State<ListBakery> {
   PageController _controller;
 
-  _goToDetail(Category category) {
-    final page = Details(category: category);
+  _goToDetail(Bakery bakery) {
+    final page = BakerysDetails(bakery: bakery);
     Navigator.of(context).push(
       PageRouteBuilder<Null>(
           pageBuilder: (BuildContext context, Animation<double> animation,
@@ -52,12 +50,10 @@ class _ListState extends State<ListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavDrawer(),
-      appBar: appBar(context),
       body: PageView.builder(
           scrollDirection: Axis.vertical,
           controller: _controller,
-          itemCount: categories.length,
+          itemCount: bk.length,
           itemBuilder: (context, index) {
             double current = 0;
             try {
@@ -66,11 +62,11 @@ class _ListState extends State<ListPage> {
 
             final resize =
                 (1 - (((current - index).abs() * 0.3).clamp(0.0, 1.0)));
-            final currentCategory = categories[index];
+            final currentBakery = bk[index];
             return ListItem(
-              category: currentCategory,
+              bakery: currentBakery,
               resize: resize,
-              onTap: () => _goToDetail(currentCategory),
+              onTap: () => _goToDetail(currentBakery),
             );
           }),
     );
@@ -78,13 +74,13 @@ class _ListState extends State<ListPage> {
 }
 
 class ListItem extends StatelessWidget {
-  final Category category;
+  final Bakery bakery;
   final double resize;
   final VoidCallback onTap;
 
   const ListItem({
     Key key,
-    @required this.category,
+    @required this.bakery,
     @required this.resize,
     @required this.onTap,
   }) : super(key: key);
@@ -108,7 +104,7 @@ class ListItem extends StatelessWidget {
                   top: height / 4,
                   bottom: 0,
                   child: Hero(
-                    tag: "image_${category.title}",
+                    tag: "background_${bakery.title}",
                     child: Card(
                       clipBehavior: Clip.antiAliasWithSaveLayer,
                       elevation: 10,
@@ -120,7 +116,7 @@ class ListItem extends StatelessWidget {
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                              Color(category.color),
+                              Color(bakery.color),
                               Colors.white,
                             ],
                                 stops: [
@@ -134,7 +130,7 @@ class ListItem extends StatelessWidget {
                             bottom: 10,
                           ),
                           child: Text(
-                            category.title,
+                            bakery.title,
                             style: TextStyle(
                               fontSize: 24 * resize,
                               fontWeight: FontWeight.w600,
@@ -148,15 +144,11 @@ class ListItem extends StatelessWidget {
                 Align(
                   alignment: Alignment.topRight,
                   child: Hero(
-                    tag: "image_${category.title}",
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: Image.asset(
-                        category.link,
-                        //fit: BoxFit.scaleDown,
-                        width: width / 2,
-                        height: height,
-                      ),
+                    tag: "image_${bakery.title}",
+                    child: Image.asset(
+                      bakery.link,
+                      width: width / 2,
+                      height: height,
                     ),
                   ),
                 ),

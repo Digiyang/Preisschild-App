@@ -2,21 +2,24 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Bakerys/Weichardt/components/list.dart';
 import 'package:flutter_app/blocs/appBlocs.dart';
+import 'package:flutter_app/screens/bar.dart';
 import 'package:flutter_app/template/where.dart';
 import 'package:flutter_app/widgets/navigator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  HomeScreen({Key key}) : super(key: key);
+class HomeScreenMaps extends StatefulWidget {
+  HomeScreenMaps({Key key}) : super(key: key);
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenMapsState createState() => _HomeScreenMapsState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenMapsState extends State<HomeScreenMaps> {
   Completer<GoogleMapController> _googleMapsController = Completer();
   StreamSubscription whereSub;
+  StreamSubscription wherePin;
 
   @override
   void initState() {
@@ -28,6 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
 
+    wherePin = bloc.bounds.stream.listen((bounds) async {
+      final GoogleMapController controller = await _googleMapsController.future;
+      controller.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50.0));
+    });
+
     super.initState();
   }
 
@@ -35,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     final bloc = Provider.of<AppBlocs>(context, listen: false);
     bloc.dispose();
+    wherePin.cancel();
     whereSub.cancel();
     super.dispose();
   }
@@ -45,10 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       //backgroundColor: Colors.deepOrangeAccent[100],
       drawer: NavDrawer(),
-      appBar: AppBar(
-        title: Text('Preisschild'),
-        backgroundColor: Colors.deepOrangeAccent,
-      ),
+      appBar: appBar(context),
       body: (bloc.current == null)
           ? Center(
               child: CircularProgressIndicator(),
@@ -67,9 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Stack(
                   children: [
                     Container(
-                      height: 300.0,
+                      height: 500.0,
                       child: GoogleMap(
                         mapType: MapType.normal,
+                        markers: Set<Marker>.of(bloc.pins),
                         myLocationEnabled: true,
                         initialCameraPosition: CameraPosition(
                             target: LatLng(
@@ -110,6 +117,84 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                   ],
                 ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Nearst Places',
+                        style: TextStyle(
+                            fontSize: 25.0, fontWeight: FontWeight.bold))),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Wrap(
+                    spacing: 8.0,
+                    children: [
+                      FilterChip(
+                        label: Text('Bakery'),
+                        onSelected: (val) => bloc.toggleArea('bakery', val),
+                        selected: bloc.area == 'bakery',
+                        selectedColor: Colors.orangeAccent,
+                      ),
+                      FilterChip(
+                        label: Text('ATM'),
+                        onSelected: (val) => bloc.toggleArea('atm', val),
+                        selected: bloc.area == 'atm',
+                        selectedColor: Colors.green,
+                      ),
+                      FilterChip(
+                        label: Text('Bank'),
+                        onSelected: (val) => bloc.toggleArea('bank', val),
+                        selected: bloc.area == 'bank',
+                        selectedColor: Colors.greenAccent,
+                      ),
+                      FilterChip(
+                        label: Text('Cafe'),
+                        onSelected: (val) => bloc.toggleArea('cafe', val),
+                        selected: bloc.area == 'cafe',
+                        selectedColor: Colors.brown,
+                      ),
+                      FilterChip(
+                        label: Text('Store'),
+                        onSelected: (val) => bloc.toggleArea('store', val),
+                        selected: bloc.area == 'store',
+                        selectedColor: Colors.red,
+                      ),
+                      FilterChip(
+                        label: Text('Drugstore'),
+                        onSelected: (val) => bloc.toggleArea('drugstore', val),
+                        selected: bloc.area == 'drugstore',
+                        selectedColor: Colors.redAccent,
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListPage()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(30.0)),
+                            primary: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 50, vertical: 12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3.0),
+                            child: Text(
+                              "Access Shop",
+                              style: TextStyle(
+                                color: Colors.blueGrey,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
     );
