@@ -496,7 +496,16 @@ class _VocalAssistantState extends State<VocalAssistant> {
                                                               break;
 
       case "please give 6 dinkelbrot and 6 ciabatta":
-      case "please give six dinkelbrot and six ciabatta": response = "Okay 2 Dinkelbrötchen and 2 Ciabatta are selected, total price is 16.50 euro. Do you want to pay by card or paypal?";
+      case "please give 6 dinkelbrot & 6 ciabatta":
+
+      case "please give 6 dinkelbrot and six ciabatta":
+      case "please give 6 dinkelbrot & six ciabatta":
+
+      case "please give six dinkelbrot and 6 ciabatta":
+      case "please give six dinkelbrot & 6 ciabatta":
+
+      case "please give six dinkelbrot and six ciabatta":
+      case "please give six dinkelbrot & six ciabatta": response = "Okay 2 Dinkelbrötchen and 2 Ciabatta are selected, total price is 16.50 euro. Do you want to pay by card or paypal?";
                                                             break;
 
       case "credit card":
@@ -509,25 +518,132 @@ class _VocalAssistantState extends State<VocalAssistant> {
       case "paypal": response = "Please enter your paypal username and password";
                       break;
 
-      case "credit card 123456 and 1234":
-      case "creditcard 123456 and 1234":
+      case "credit card one two and one four":
+      case "credit card one two & one four":
+      case "creditcard one two and one four":
+      case "creditcard one two & one four":
 
-      case "credit card one two three four five six and one two three four":
-      case "creditcard one two three four five six and one two three four":
+      case "credit card 12 and 14":
+      case "credit card one two and 14":
+      case "credit card 12 and one four":
 
-      case "debit card 123456 and 1234":
-      case "debitcard 123456 and 1234":
+      case "credit card 12 & 14":
+      case "credit card one two & 14":
+      case "credit card 12 & one four":
 
-      case "debit card one two three four five six and one two three four":
-      case "debitcard one two three four five six and one two three four":
+      case "credit card 1 2 and 1 4":
+      case "credit card one two and 1 4":
+      case "credit card 1 2 and one four":
 
-      case "paypal blackdiamond and 123456":
-      case "paypal blackdiamond and one two three four five six":
-      case "paypal blackdiamond & 1 2 3 4 5 6":
-      case "paypal black diamond and 123456":
-      case "paypal black diamond & 1 2 3 4 5 6":
-      case "paypal black diamond and one two three four five six": response = "Thank you for payment, here are your breads. Have a nice day.";
-                                                                    break;
+      case "credit card 1 2 & 1 4":
+      case "credit card one two & 1 4":
+      case "credit card 1 2 & one four":
+
+      case "creditcard 12 and 14":
+      case "creditcard one two and 14":
+      case "creditcard 12 and one four":
+
+      case "creditcard 12 & 14":
+      case "creditcard one two & 14":
+      case "creditcard 12 & one four":
+
+      case "creditcard 1 2 and 1 4":
+      case "creditcard one two and 1 4":
+      case "creditcard 1 2 and one four":
+
+      case "creditcard 1 2 & 1 4":
+      case "creditcard one two & 1 4":
+      case "creditcard 1 2 & one four":
+
+      case "debit card one two and one four":
+      case "debit card one two & one four":
+      case "debitcard one two and one four":
+      case "debitcard one two & one four":
+
+      case "debit card 12 and 14":
+      case "debit card one two and 14":
+      case "debit card 12 and one four":
+
+      case "debit card 12 & 14":
+      case "debit card one two & 14":
+      case "debit card 12 & one four":
+
+      case "debit card 1 2 and 1 4":
+      case "debit card one two and 1 4":
+      case "debit card 1 2 and one four":
+
+      case "debit card 1 2 & 1 4":
+      case "debit card one two & 1 4":
+      case "debit card 1 2 & one four":
+
+      case "debitcard 12 and 14":
+      case "debitcard one two and 14":
+      case "debitcard 12 and one four":
+
+      case "debitcard 12 & 14":
+      case "debitcard one two & 14":
+      case "debitcard 12 & one four":
+
+      case "debitcard 1 2 and 1 4":
+      case "debitcard one two and 1 4":
+      case "debitcard 1 2 and one four":
+
+      case "debitcard 1 2 & 1 4":
+      case "debitcard one two & 1 4":
+      case "debitcard 1 2 & one four":
+
+      case "paypal blackdiamond and 14":
+      case "paypal black diamond and 14":
+      case "paypal blackdiamond and 1 4":
+      case "paypal black diamond and 1 4":
+
+      case "pay pal blackdiamond and 14":
+      case "pay pal black diamond and 14":
+      case "pay pal blackdiamond and 1 4":
+      case "pay pal black diamond and 1 4":
+
+      case "paypal blackdiamond & 14":
+      case "paypal black diamond & 14":
+      case "paypal blackdiamond & 1 4":
+      case "paypal black diamond & 1 4":
+
+      case "pay pal blackdiamond & 14":
+      case "pay pal black diamond & 14":
+      case "pay pal blackdiamond & 1 4":
+      case "pay pal black diamond & 1 4":
+
+      case "paypal blackdiamond & one four":
+      case "paypal blackdiamond & one 4":
+      case "paypal blackdiamond & 1 four":
+
+      case "paypal black diamond & one four":
+      case "paypal black diamond & one 4":
+      case "paypal black diamond & 1 four":
+
+      case "pay pal blackdiamond & one four":
+      case "pay pal blackdiamond & one 4":
+      case "pay pal blackdiamond & 1 four":
+
+      case "pay pal black diamond & one four":
+      case "pay pal black diamond & one 4":
+      case "pay pal black diamond & 1 four":
+
+      case "paypal blackdiamond and one four":
+      case "paypal blackdiamond and one 4":
+      case "paypal blackdiamond and 1 four":
+
+      case "paypal black diamond and one four":
+      case "paypal black diamond and one 4":
+      case "paypal black diamond and 1 four":
+
+      case "pay pal blackdiamond and one four":
+      case "pay pal blackdiamond and one 4":
+      case "pay pal blackdiamond and 1 four":
+
+      case "pay pal black diamond and one four":
+      case "pay pal black diamond and one 4":
+      case "pay pal black diamond and 1 four": response = "Thank you for payment, here are your breads. Have a nice day.";
+                                               break;
     }
 
     if (locale != 'en_US' && response.isNotEmpty) {
