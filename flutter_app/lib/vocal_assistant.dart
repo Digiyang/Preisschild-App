@@ -478,21 +478,21 @@ class _VocalAssistantState extends State<VocalAssistant> {
       case "hello i want to buy bread": response = "Here are some breads: Brötchenkonfekt, Dinkelbrötchen, Doppelte, Kräuterbrötchen, Kaiserbrötchen, Ciabatta, Croissant.";
                                           break;
 
-      case "please tell me dinkelbrot price": response = "Each Dinkelbrötchen price is 1.30 euro";
+      case "please tell me dinkelbrot price": response = "Each Dinkelbrötchen price is 1 euro 30 cent";
                                                   break;
 
       case "please give 6 dinkelbrot":
-      case "please give six dinkelbrot": response = "Okay 6 Dinkelbrötchen are selected, total price is 7.80 euro. Do you want to pay by card or paypal?";
+      case "please give six dinkelbrot": response = "Okay 6 Dinkelbrötchen are selected, total price is 7 euro 80 cent. Do you want to pay by card or paypal?";
                                                       break;
 
-      case "please tell me ciabatta price": response = "Each Ciabatta price is 1.45 euro";
+      case "please tell me ciabatta price": response = "Each Ciabatta price is 1 euro 45 cent";
                                                   break;
 
       case "please give 6 ciabatta":
-      case "please give six ciabatta": response = "Okay 6 Ciabatta are selected, total price is 8.70 euro. Do you want to pay by card or paypal?";
+      case "please give six ciabatta": response = "Okay 6 Ciabatta are selected, total price is 8 euro 70 cent. Do you want to pay by card or paypal?";
                                         break;
 
-      case "please tell me dinkelbrot and ciabatta price":  response = "Each Dinkelbrötchen price is 1.30 euro and Each Ciabatta price is 1.45 euro";
+      case "please tell me dinkelbrot and ciabatta price":  response = "Each Dinkelbrötchen price is 1 euro 30 cent and Each Ciabatta price is 1 euro 45 cent";
                                                               break;
 
       case "please give 6 dinkelbrot and 6 ciabatta":
@@ -505,7 +505,7 @@ class _VocalAssistantState extends State<VocalAssistant> {
       case "please give six dinkelbrot & 6 ciabatta":
 
       case "please give six dinkelbrot and six ciabatta":
-      case "please give six dinkelbrot & six ciabatta": response = "Okay 2 Dinkelbrötchen and 2 Ciabatta are selected, total price is 16.50 euro. Do you want to pay by card or paypal?";
+      case "please give six dinkelbrot & six ciabatta": response = "Okay 6 Dinkelbrötchen and 6 Ciabatta are selected, total price is 16 euro 50 cent. Do you want to pay by card or paypal?";
                                                             break;
 
       case "credit card":
