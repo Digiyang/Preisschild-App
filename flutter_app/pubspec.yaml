@@ -37,6 +37,7 @@ dependencies:
   smooth_star_rating: ^1.1.1
   autocomplete_textfield: any
   permission_handler: ^6.1.1
+  translator: ^0.1.6+1
 
 dependency_overrides:
   http: ^0.12.2

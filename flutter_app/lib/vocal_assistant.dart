@@ -11,6 +11,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:translator/translator.dart';
 
 import 'business_logic/product_bl.dart';
 
@@ -24,6 +25,9 @@ class VocalAssistant extends StatefulWidget {
 enum TtsState { playing, stopped, paused, continued }
 
 class _VocalAssistantState extends State<VocalAssistant> {
+
+  final translator = GoogleTranslator();
+
   bool _hasSpeech = false;
   // sounds in DB. need to check from low frequency to high frequency
   double level = 0.0;
@@ -147,7 +151,9 @@ class _VocalAssistantState extends State<VocalAssistant> {
     if (_newVoiceText != null) {
       if (_newVoiceText.isNotEmpty) {
         await flutterTts.awaitSpeakCompletion(true);
+        print("#hello1");
         await flutterTts.speak(_newVoiceText);
+        print("#hello2");
       }
     }
   }
@@ -197,7 +203,7 @@ class _VocalAssistantState extends State<VocalAssistant> {
 
     // Welcome Text
     // Heartly Welcome to Bakery B
-    _newVoiceText = "Herzlich Willkommen in der Bäckerei B";
+    _newVoiceText = "Weichardt-Brot: Herzlich Willkommen in der ersten Demeter-Vollkornbäckerei!";
     await _speak();
 
     if (!mounted) return;
@@ -423,6 +429,7 @@ class _VocalAssistantState extends State<VocalAssistant> {
 
   void stopListening() {
     speech.stop();
+    _speak();
     setState(() {
       level = 0.0;
     });
@@ -435,20 +442,225 @@ class _VocalAssistantState extends State<VocalAssistant> {
     });
   }
 
+  Future<String> generateResponse(String request, String locale) async {
+    Translation translation;
+
+    request = request.trim().toLowerCase();
+    print("#blackdiamond request 1 $request");
+
+    if (locale != 'en_US') {
+      translation = await translator.translate(request, from: 'de', to: 'en');
+      request = translation.toString().trim().toLowerCase();
+      print("#blackdiamond request 2 $request");
+      Map<String, String> replacements = Map<String, String>();
+      String key;
+      RegExp(r"(spel\w+\sbread)|(dark\w+\sbread)").allMatches(request).forEach((match) {
+        key = request.substring(match.start, match.end).trim();
+        print("#blackdiamond key: $key");
+        replacements.putIfAbsent(key, () => "");
+      });
+
+      if (replacements.containsKey("spelled bread")) {
+        replacements.update("spelled bread", (v) => v = "dinkelbrot" );
+      }
+
+      if (replacements.containsKey("dark bread")) {
+        replacements.update("dark bread", (v) => v = "dinkelbrot" );
+      }
+
+      replacements.forEach((key, value) => request = request.replaceAll(key, value));
+      print("#blackdiamond request $request");
+    }
+
+    String response = '';
+
+    switch(request) {
+      case "hello i want to buy bread": response = "Here are some breads: Brötchenkonfekt, Dinkelbrötchen, Doppelte, Kräuterbrötchen, Kaiserbrötchen, Ciabatta, Croissant.";
+                                          break;
+
+      case "please tell me dinkelbrot price": response = "Each Dinkelbrötchen price is 1 euro 30 cent";
+                                                  break;
+
+      case "please give 6 dinkelbrot":
+      case "please give six dinkelbrot": response = "Okay 6 Dinkelbrötchen are selected, total price is 7 euro 80 cent. Do you want to pay by card or paypal?";
+                                                      break;
+
+      case "please tell me ciabatta price": response = "Each Ciabatta price is 1 euro 45 cent";
+                                                  break;
+
+      case "please give 6 ciabatta":
+      case "please give six ciabatta": response = "Okay 6 Ciabatta are selected, total price is 8 euro 70 cent. Do you want to pay by card or paypal?";
+                                        break;
+
+      case "please tell me dinkelbrot and ciabatta price":  response = "Each Dinkelbrötchen price is 1 euro 30 cent and Each Ciabatta price is 1 euro 45 cent";
+                                                              break;
+
+      case "please give 6 dinkelbrot and 6 ciabatta":
+      case "please give 6 dinkelbrot & 6 ciabatta":
+
+      case "please give 6 dinkelbrot and six ciabatta":
+      case "please give 6 dinkelbrot & six ciabatta":
+
+      case "please give six dinkelbrot and 6 ciabatta":
+      case "please give six dinkelbrot & 6 ciabatta":
+
+      case "please give six dinkelbrot and six ciabatta":
+      case "please give six dinkelbrot & six ciabatta": response = "Okay 6 Dinkelbrötchen and 6 Ciabatta are selected, total price is 16 euro 50 cent. Do you want to pay by card or paypal?";
+                                                            break;
+
+      case "credit card":
+      case "creditcard":
+
+      case "debitcard":
+      case "debit card": response = "Please enter your card number and pin number";
+                          break;
+      case "pay pal":
+      case "paypal": response = "Please enter your paypal username and password";
+                      break;
+
+      case "credit card one two and one four":
+      case "credit card one two & one four":
+      case "creditcard one two and one four":
+      case "creditcard one two & one four":
+
+      case "credit card 12 and 14":
+      case "credit card one two and 14":
+      case "credit card 12 and one four":
+
+      case "credit card 12 & 14":
+      case "credit card one two & 14":
+      case "credit card 12 & one four":
+
+      case "credit card 1 2 and 1 4":
+      case "credit card one two and 1 4":
+      case "credit card 1 2 and one four":
+
+      case "credit card 1 2 & 1 4":
+      case "credit card one two & 1 4":
+      case "credit card 1 2 & one four":
+
+      case "creditcard 12 and 14":
+      case "creditcard one two and 14":
+      case "creditcard 12 and one four":
+
+      case "creditcard 12 & 14":
+      case "creditcard one two & 14":
+      case "creditcard 12 & one four":
+
+      case "creditcard 1 2 and 1 4":
+      case "creditcard one two and 1 4":
+      case "creditcard 1 2 and one four":
+
+      case "creditcard 1 2 & 1 4":
+      case "creditcard one two & 1 4":
+      case "creditcard 1 2 & one four":
+
+      case "debit card one two and one four":
+      case "debit card one two & one four":
+      case "debitcard one two and one four":
+      case "debitcard one two & one four":
+
+      case "debit card 12 and 14":
+      case "debit card one two and 14":
+      case "debit card 12 and one four":
+
+      case "debit card 12 & 14":
+      case "debit card one two & 14":
+      case "debit card 12 & one four":
+
+      case "debit card 1 2 and 1 4":
+      case "debit card one two and 1 4":
+      case "debit card 1 2 and one four":
+
+      case "debit card 1 2 & 1 4":
+      case "debit card one two & 1 4":
+      case "debit card 1 2 & one four":
+
+      case "debitcard 12 and 14":
+      case "debitcard one two and 14":
+      case "debitcard 12 and one four":
+
+      case "debitcard 12 & 14":
+      case "debitcard one two & 14":
+      case "debitcard 12 & one four":
+
+      case "debitcard 1 2 and 1 4":
+      case "debitcard one two and 1 4":
+      case "debitcard 1 2 and one four":
+
+      case "debitcard 1 2 & 1 4":
+      case "debitcard one two & 1 4":
+      case "debitcard 1 2 & one four":
+
+      case "paypal blackdiamond and 14":
+      case "paypal black diamond and 14":
+      case "paypal blackdiamond and 1 4":
+      case "paypal black diamond and 1 4":
+
+      case "pay pal blackdiamond and 14":
+      case "pay pal black diamond and 14":
+      case "pay pal blackdiamond and 1 4":
+      case "pay pal black diamond and 1 4":
+
+      case "paypal blackdiamond & 14":
+      case "paypal black diamond & 14":
+      case "paypal blackdiamond & 1 4":
+      case "paypal black diamond & 1 4":
+
+      case "pay pal blackdiamond & 14":
+      case "pay pal black diamond & 14":
+      case "pay pal blackdiamond & 1 4":
+      case "pay pal black diamond & 1 4":
+
+      case "paypal blackdiamond & one four":
+      case "paypal blackdiamond & one 4":
+      case "paypal blackdiamond & 1 four":
+
+      case "paypal black diamond & one four":
+      case "paypal black diamond & one 4":
+      case "paypal black diamond & 1 four":
+
+      case "pay pal blackdiamond & one four":
+      case "pay pal blackdiamond & one 4":
+      case "pay pal blackdiamond & 1 four":
+
+      case "pay pal black diamond & one four":
+      case "pay pal black diamond & one 4":
+      case "pay pal black diamond & 1 four":
+
+      case "paypal blackdiamond and one four":
+      case "paypal blackdiamond and one 4":
+      case "paypal blackdiamond and 1 four":
+
+      case "paypal black diamond and one four":
+      case "paypal black diamond and one 4":
+      case "paypal black diamond and 1 four":
+
+      case "pay pal blackdiamond and one four":
+      case "pay pal blackdiamond and one 4":
+      case "pay pal blackdiamond and 1 four":
+
+      case "pay pal black diamond and one four":
+      case "pay pal black diamond and one 4":
+      case "pay pal black diamond and 1 four": response = "Thank you for payment, here are your breads. Have a nice day.";
+                                               break;
+    }
+
+    if (locale != 'en_US' && response.isNotEmpty) {
+      translation = await translator.translate(response, from: 'en', to: 'de');
+      response = translation.toString();
+      print("#blackdiamond response $response");
+    }
+
+    return Future.value(response);
+  }
+
   Future<void> resultListener(SpeechRecognitionResult result) async {
     ++resultListened;
     print('Result listener $resultListened');
 
-    // if (result.recognizedWords.toLowerCase() == "product list") {
-    //   print("#blackdiamond ${result.recognizedWords}");
-    //   List<ProductDao> products = await ProductBL().get_all_products();
-    //   print("#blackdiamond " + products.length.toString());
-    // }
-
-    // _newVoiceText = result.recognizedWords;
-
-    _newVoiceText = _currentLocaleId == "en_US" ? "Here are breads you might like:" : "Hier sind frisch gebackene Brote für Sie:";
-    _speak();
+    _newVoiceText = await generateResponse(result.recognizedWords, _currentLocaleId);
+    await _speak();
 
     setState(() {
       lastWords = '${result.recognizedWords} - ${result.finalResult}';
