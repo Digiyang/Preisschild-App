@@ -84,6 +84,8 @@ flutter:
      - assets/Weich/icons8-naan-100.png
      - assets/Weich/icons8-pretzel-100.png
      - assets/Weich/icons8-sandwich-100.png
+     - assets/Weich/baeckerei_weichardt_berlin_biobrot_demeter_brot.jpg
+     - assets/Weich/a.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -1,10 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter_app/Bakerys/Weichardt/components/category.dart';
 import 'package:flutter_app/Bakerys/Weichardt/components/details.dart';
-import 'package:flutter_app/Bakerys/Weichardt/screens/shopScreen.dart';
 import 'package:flutter_app/screens/bar.dart';
-import 'package:flutter_app/screens/components/searchBar.dart';
 import 'package:flutter_app/widgets/navigator.dart';
 import 'package:flutter/material.dart';
 
@@ -34,55 +30,54 @@ class _ListState extends State<ListPage> {
           transitionDuration: Duration(milliseconds: 400)),
     );
   }
+
   _listListener() {
     setState(() {});
   }
 
   @override
-  void initState(){
+  void initState() {
     _controller = PageController(viewportFraction: 0.6);
     _controller.addListener(_listListener);
     super.initState();
   }
 
-  @override 
-  void dispose(){
+  @override
+  void dispose() {
     _controller.removeListener(_listListener);
     _controller.dispose();
     super.dispose();
   }
 
-  @override 
+  @override
   Widget build(BuildContext context) {
-    return 
-        Scaffold(
-          drawer: NavDrawer(),
-          appBar: appBar(context),
-          body:PageView.builder(
-            scrollDirection: Axis.vertical,
-            controller: _controller,
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              double current = 0;
-              try {
-                current = _controller.page;
-              } catch(_) {}
-              
-              final resize = (1 - (((current - index).abs() * 0.3).clamp(0.0, 1.0)));
-              final currentCategory = categories[index];
-              return ListItem(
-                category: currentCategory,
-                resize: resize,
-                onTap: () => _goToDetail(currentCategory),
-              );
-            }
-          ),
-        );        
+    return Scaffold(
+      drawer: NavDrawer(),
+      appBar: appBar(context),
+      body: PageView.builder(
+          scrollDirection: Axis.vertical,
+          controller: _controller,
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            double current = 0;
+            try {
+              current = _controller.page;
+            } catch (_) {}
+
+            final resize =
+                (1 - (((current - index).abs() * 0.3).clamp(0.0, 1.0)));
+            final currentCategory = categories[index];
+            return ListItem(
+              category: currentCategory,
+              resize: resize,
+              onTap: () => _goToDetail(currentCategory),
+            );
+          }),
+    );
   }
 }
 
 class ListItem extends StatelessWidget {
-
   final Category category;
   final double resize;
   final VoidCallback onTap;
@@ -113,7 +108,7 @@ class ListItem extends StatelessWidget {
                   top: height / 4,
                   bottom: 0,
                   child: Hero(
-                    tag: "background_${category.title}",
+                    tag: "image_${category.title}",
                     child: Card(
                       clipBehavior: Clip.antiAliasWithSaveLayer,
                       elevation: 10,
@@ -154,10 +149,14 @@ class ListItem extends StatelessWidget {
                   alignment: Alignment.topRight,
                   child: Hero(
                     tag: "image_${category.title}",
-                    child: Image.asset(
-                      category.link,
-                      width: width / 2,
-                      height: height,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Image.asset(
+                        category.link,
+                        //fit: BoxFit.scaleDown,
+                        width: width / 2,
+                        height: height,
+                      ),
                     ),
                   ),
                 ),
