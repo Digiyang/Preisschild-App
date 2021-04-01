@@ -13,7 +13,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:translator/translator.dart';
 
-import 'business_logic/product_bl.dart';
+import '../business_logic/product_bl.dart';
 
 void main() => runApp(VocalAssistant());
 

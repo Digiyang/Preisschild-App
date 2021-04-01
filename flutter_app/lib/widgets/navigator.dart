@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/vocal_assistant.dart';
+import 'package:flutter_app/screens/vocal_assistant.dart';
 
 class NavDrawer extends StatelessWidget {
 
