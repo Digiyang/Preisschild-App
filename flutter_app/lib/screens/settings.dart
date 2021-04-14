@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/business_logic/settings_bl.dart';
+import 'package:flutter_app/data_access/settings_dao.dart';
 
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -24,6 +26,8 @@ class SettingsFormState extends State<Settings> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final welcomeTextController = TextEditingController();
+
+  final settingsBL = SettingsBL();
 
   void _switchLang(selectedVal) {
     setState(() {
@@ -53,13 +57,13 @@ class SettingsFormState extends State<Settings> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
+              Expanded(flex: 1, child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: Row(
                     children: <Widget>[
-                      Text('Locale'),
-                      SizedBox(width: 18,),
-                      DropdownButton(
+                      Expanded(flex: 1, child: Text('Locale')),
+                      Expanded(flex: 1, child: SizedBox(width: 2,)),
+                      Expanded(flex: 1, child: DropdownButton(
                         onChanged: (selectedVal) => _switchLang(selectedVal),
                         value: _currentLocaleId,
                         items: _localeNames
@@ -70,54 +74,63 @@ class SettingsFormState extends State<Settings> {
                           ),
                         )
                             .toList(),
-                      )
+                      ))
                     ]),
-              ),
-              Padding(
+              )),
+              Expanded(flex: 1, child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: welcomeTextController,
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Welcome Text',
-                  ),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter Welcome Text';
-                    }
-                    return null;
-                  },
+                child: Row(
+                  children: <Widget>[
+                    Expanded(flex: 1, child: TextFormField(
+                      controller: welcomeTextController,
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Welcome Text',
+                      ),
+                      // The validator receives the text that the user has entered.
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Welcome Text';
+                        }
+                        return null;
+                      },
+                    ))
+                  ],
                 )
-              ),
-              Padding(
+              )),
+              Expanded(flex: 1, child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
                 child: Row(
                   children: <Widget>[
-                    ElevatedButton(
+                    Expanded(flex: 1, child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
                       child: Text('Back'),
-                    ),
-                    SizedBox(width: 18,),
-                    ElevatedButton(
+                    )),
+                    Expanded(flex: 1, child: SizedBox(width: 6,)),
+                    Expanded(flex: 1, child: ElevatedButton(
                       onPressed: () {
                         // Validate returns true if the form is valid, or false otherwise.
                         if (_formKey.currentState.validate()) {
                           // If the form is valid, display a snackbar. In the real world,
                           // you'd often call a server or save the information in a database.
                           print(welcomeTextController.text + " " + _currentLocaleId);
+                          create_settings(SettingsDao(-1, _currentLocaleId, welcomeTextController.text));
                         }
                       },
                       child: Text('Save'),
-                    )
+                    ))
                 ]),
-              ),
+              )),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> create_settings(SettingsDao settings) async {
+    await settingsBL.create_settings(settings);
   }
 }

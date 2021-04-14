@@ -54,7 +54,7 @@ class _HomeScreenMapsState extends State<HomeScreenMaps> {
     return Scaffold(
       //backgroundColor: Colors.deepOrangeAccent[100],
       drawer: NavDrawer(),
-      appBar: appBar(context),
+      appBar: PreisschildBar().appBar(context),
       body: (bloc.current == null)
           ? Center(
               child: CircularProgressIndicator(),

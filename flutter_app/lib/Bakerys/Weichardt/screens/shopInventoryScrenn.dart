@@ -197,7 +197,7 @@ class _ShopInventoryHomeState extends State<ShopInventoryHome> {
                   left: 0,
                   right: 0,
                   top: appBarPanel(bloc.state),
-                  child: appBar(context),
+                  child: PreisschildBar().appBar(context),
                 ),
               ],
             ),

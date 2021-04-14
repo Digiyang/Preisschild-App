@@ -8,7 +8,7 @@ class WeichShop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavDrawer(),
-      appBar: appBar(context),
+      appBar: PreisschildBar().appBar(context),
       body: ShopScreen(),
     );
   }

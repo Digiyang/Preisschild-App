@@ -39,7 +39,7 @@ void main() async {
 }
 
 void fetchOrganization() async {
-  OrganizationDao organization = await OrganizationBL().get_organization("Bakery B");
+  OrganizationDao organization = await OrganizationBL().get_organization("Weichardt-Brot");
   print("Resultset length: " + (organization == null ? "0" : "1"));
   print("------------------------------------------");
   print(organization.organizationId);
@@ -49,6 +49,8 @@ void fetchOrganization() async {
   print(organization.orgDescription);
   print(organization.logo);
   print(organization.image);
+  print(organization.orgSettings.language);
+  print(organization.orgSettings.welcomeSpeech);
   print("------------------------------------------");
 }
 

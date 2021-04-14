@@ -53,7 +53,7 @@ class _ListState extends State<ListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavDrawer(),
-      appBar: appBar(context),
+      appBar: PreisschildBar().appBar(context),
       body: PageView.builder(
           scrollDirection: Axis.vertical,
           controller: _controller,

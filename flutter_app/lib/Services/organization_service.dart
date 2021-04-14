@@ -14,7 +14,7 @@ class OrganizationService {
   StreamController<ProductDao> productStream = StreamController();
 
   Future<OrganizationDao> get_organization(String name) async {
-    var query = "SELECT org.* FROM Preisschild.tbl_organization org WHERE org.name = '$name'";
+    var query = "SELECT org.*, org_settings.locale, org_settings.welcome_text FROM Preisschild.tbl_organization org, Preisschild.tbl_settings org_settings WHERE org.settings_id = org_settings.id AND org.name = '$name'";
 
     var exitcode = await connector.execute_through_ssh(query, (_ , v) {
       if (v.trim() == "logout") {
