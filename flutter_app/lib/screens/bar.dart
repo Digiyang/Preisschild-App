@@ -43,15 +43,8 @@ class PreisschildBar {
           icon: Icon(Icons.mic_none_rounded, size: 30.0),
           // onPressed: () => {Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) { return vocalAssistant; }))},
           onPressed: () {
-            // if (!this.is_VA_Running) {
-              print("start_vocal_assistant");
-              // this.is_VA_Running = true;
+              print("start Preisschild VA");
               start_vocal_assistant();
-            // } else {
-            //   print("stop_vocal_assistant");
-            //   this.is_VA_Running = false;
-            //   stop_vocal_assistant();
-            // }
           },
         ),
         Padding(
@@ -63,33 +56,34 @@ class PreisschildBar {
 
   Future<void> start_vocal_assistant() async {
 
-    // TODO change and take from organization dao
-    // SettingsDao settings = await SettingsBL().get_settings_by_org_id(1);
-    // print(settings.welcomeSpeech);
+    // TODO fetch organization id and organization basic object from database
+    // ToDo update organization object with settings
+    SettingsDao settings = await SettingsBL().get_settings_by_org_id(1);
+    print(settings.welcomeSpeech);
 
     if (!this.is_VA_Initialized) {
       print("start VA initialization.");
       await this.va.requestForPermissions();
       this.va.initTts();
-      await this.va.initSpeechState();
+      await this.va.initSpeechState(settings);
       this.is_VA_Initialized = true;
       print("end VA initialization.");
     }
+
     if (va.hasSpeech) {
+      va.isNeedToRequestAgain = true;
       print("#hello va 1.2");
-      // while(true) {
+      while(va.isNeedToRequestAgain) {
+        await va.requestForProductTitle();
         print("#hello va 1.2.1 => " + (va.isListening ? "listening" : "not listening"));
         if (!va.isListening) {
           print("#hello va 1.2.2");
-          await va.startListening();
+          await va.listenForProductTitle();
           print("#hello va 1.2.3");
         }
-      // }
+        // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
+        await Future.delayed(Duration(seconds: 24));
+      }
     }
-  }
-
-  Future<void> stop_vocal_assistant() async {
-    await this.va.stopListening();
-    await this.va.stopSpeaking();
   }
 }

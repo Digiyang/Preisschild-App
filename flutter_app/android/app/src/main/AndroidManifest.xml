@@ -28,20 +28,51 @@
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+<!--            <intent-filter tools:targetApi="m">-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <data-->
+<!--                    android:host="preisschild.androidappactions.com"-->
+<!--                    android:scheme="https" />-->
+<!--            </intent-filter>-->
+
+            <!-- When building your project, <nav-graph> element will be replaced with generated
+            <intent-filter> elements for all deep links defined in the navigation graph. -->
+<!--            <nav-graph android:value="@navigation/nav_graph" />-->
+
+            <!-- Deep linking -->
+<!--            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />-->
+<!--            <intent-filter android:autoVerify="true">-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--                <data android:scheme="http" android:host="flutterbooksample.com" />-->
+<!--                <data android:scheme="https" />-->
+<!--            </intent-filter>-->
+
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-       <meta-data
+        <meta-data
            android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyB2G3zsHfwXxzvrR175Htiz-7c_AI8IXTE"
            />
+
+       <!-- Required reference to App Actions actions.xml file. -->
+<!--       <meta-data-->
+<!--           android:name="com.google.android.actions"-->
+<!--           android:resource="@xml/actions" />-->
+
     </application>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />

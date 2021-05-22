@@ -11,12 +11,28 @@ class SettingsDao {
     this.welcomeText = welcomeText;
   }
 
+  int get iD {
+    return id;
+  }
+
+  set iD(int id) {
+    this.id = id;
+  }
+
   String get language {
     return locale;
   }
 
+  set language(String locale) {
+    this.locale = locale;
+  }
+
   String get welcomeSpeech {
     return welcomeText;
+  }
+
+  set welcomeSpeech(String welcomeText) {
+    this.welcomeText = welcomeText;
   }
 
   static List<SettingsDao> convert(String v) {

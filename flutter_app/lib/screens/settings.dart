@@ -28,6 +28,14 @@ class SettingsFormState extends State<Settings> {
   final welcomeTextController = TextEditingController();
 
   final settingsBL = SettingsBL();
+  SettingsDao settings;
+
+  @override
+  void initState() {
+    super.initState();
+    // ToDo fetch organization id from database
+    get_settings_by_org_id(1);
+  }
 
   void _switchLang(selectedVal) {
     setState(() {
@@ -116,7 +124,14 @@ class SettingsFormState extends State<Settings> {
                           // If the form is valid, display a snackbar. In the real world,
                           // you'd often call a server or save the information in a database.
                           print(welcomeTextController.text + " " + _currentLocaleId);
-                          create_settings(SettingsDao(-1, _currentLocaleId, welcomeTextController.text));
+                          if (settings == null || settings.iD == null || settings.iD == 0) {
+                            settings = SettingsDao(0, _currentLocaleId, welcomeTextController.text);
+                            create_settings();
+                          } else {
+                            settings.language = _currentLocaleId;
+                            settings.welcomeSpeech = welcomeTextController.text;
+                            update_settings();
+                          }
                         }
                       },
                       child: Text('Save'),
@@ -130,7 +145,25 @@ class SettingsFormState extends State<Settings> {
     );
   }
 
-  Future<void> create_settings(SettingsDao settings) async {
-    await settingsBL.create_settings(settings);
+  Future<void> get_settings_by_org_id(int organizationId) async {
+    settings = await settingsBL.get_settings_by_org_id(organizationId);
+
+    if (settings != null) {
+      setState(() {
+        _currentLocaleId = settings.language;
+        welcomeTextController.text = settings.welcomeSpeech;
+      });
+    }
+  }
+
+  Future<void> create_settings() async {
+    // ToDo fetch organization id from database
+    int organizationId = 1;
+    int settingsId = await settingsBL.create_settings(organizationId, settings);
+    settings.iD = settingsId;
+  }
+
+  Future<void> update_settings() async {
+    await settingsBL.update_settings(settings);
   }
 }

@@ -1,6 +1,7 @@
 class ProductDao {
   int id;
   String title;
+  String brand;
   double weight; // in gm
   double unit_price;
   int quantity;
@@ -10,13 +11,14 @@ class ProductDao {
   String image_url;
 
   ProductDao(int id, String title,
-            double weight, double unit_price,
-            int quantity, String category,
-            String description, String short_description,
-            String image_url) {
+            String brand, double weight,
+            double unit_price, int quantity,
+            String category, String description,
+            String short_description, String image_url) {
 
       this.id = id;
       this.title = title;
+      this.brand = brand;
       this.weight = weight;
       this.unit_price = unit_price;
       this.quantity = quantity;
@@ -32,6 +34,10 @@ class ProductDao {
 
   String get productTitle {
     return title;
+  }
+
+  String get productBrand {
+    return brand;
   }
 
   double get productWeight {
@@ -76,13 +82,14 @@ class ProductDao {
         List<String> values = l.split("|");
         products.add(ProductDao(int.parse(values[1].trim()),
                                 values[2].trim(),
-                                double.parse(values[3].trim()),
+                                values[3].trim(),
                                 double.parse(values[4].trim()),
-                                int.parse(values[5].trim()),
-                                values[6].trim(),
+                                double.parse(values[5].trim()),
+                                int.parse(values[6].trim()),
                                 values[7].trim(),
                                 values[8].trim(),
-                                values[9].trim()));
+                                values[9].trim(),
+                                values[10].trim()));
       }
     }
 

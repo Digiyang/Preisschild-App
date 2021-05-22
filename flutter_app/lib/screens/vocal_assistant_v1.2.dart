@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/data_access/product_dao.dart';
+import 'package:flutter_app/data_access/settings_dao.dart';
 import 'package:flutter_app/screens/vocal_assistant.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
@@ -57,6 +58,10 @@ class VocalAssistant {
   bool get isAndroid => !kIsWeb && Platform.isAndroid;
   bool get isWeb => kIsWeb;
   ////////////////////////////////////////////////////////////////
+  final ProductBL productBL = ProductBL();
+  List<ProductDao> products;
+  bool isNeedToRequestAgain = true;
+  /////////////////////////////////////////////////////////////////
 
   bool get hasSpeech {
     return _hasSpeech;
@@ -154,24 +159,11 @@ class VocalAssistant {
     if (result == 1) ttsState = TtsState.paused;
   }
 
-  Future<void> initSpeechState() async {
+  Future<void> initSpeechState(SettingsDao settings) async {
     var hasSpeech = await speech.initialize(
         onError: errorListener, onStatus: statusListener, debugLogging: true);
     if (hasSpeech) {
-      // _localeNames = await speech.locales();
-
-      _localeNames.add(LocaleName('en_US', 'English'));
-      _localeNames.add(LocaleName('de_DE', 'Deutsch'));
-
-      // var systemLocale = await speech.systemLocale();
-      var systemLocale;
-
-      if (null != systemLocale) {
-        _currentLocaleId = systemLocale.localeId;
-      } else {
-        _currentLocaleId = 'en_US'; //'de_DE';
-      }
-
+      _currentLocaleId = settings.language;
       language = _currentLocaleId;
       flutterTts.setLanguage(language);
       if (isAndroid) {
@@ -182,206 +174,136 @@ class VocalAssistant {
     }
 
     // Welcome Text
-    // Heartly Welcome to Bakery B
-    _newVoiceText = "Weichardt-Brot: Herzlich Willkommen in der ersten Demeter-Vollkornbäckerei!";
+    _newVoiceText = settings.welcomeSpeech;
+    Translation translation;
+    if (_currentLocaleId != 'en_US') {
+      translation = await translator.translate(_newVoiceText, from: 'en', to: _currentLocaleId.substring(0, 2));
+      _newVoiceText = translation.toString().trim().toLowerCase();
+    }
+
+    print("#blackdiamond : $_newVoiceText");
+
     await _speak();
     _hasSpeech = hasSpeech;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Preisschild Vocal Assistant'),
-        ),
-        body: Column(children: [
-          Center(
-            child: Text(
-              'Speech recognition available',
-              style: TextStyle(fontSize: 22.0),
-            ),
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    TextButton(
-                      child: Text('Initialize'),
-                      onPressed: _hasSpeech ? null : initSpeechState,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    TextButton(
-                      child: Text('Start'),
-                      onPressed: !_hasSpeech || speech.isListening
-                          ? null
-                          : startListening,
-                    ),
-                    TextButton(
-                      child: Text('Stop'),
-                      onPressed: speech.isListening ? stopListening : null,
-                    ),
-                    TextButton(
-                      child: Text('Cancel'),
-                      onPressed: speech.isListening ? cancelListening : null,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    DropdownButton(
-                      onChanged: (selectedVal) => _switchLang(selectedVal),
-                      value: _currentLocaleId,
-                      items: _localeNames
-                          .map(
-                            (localeName) => DropdownMenuItem(
-                          value: localeName.localeId,
-                          child: Text(localeName.name),
-                        ),
-                      )
-                          .toList(),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Column(
-              children: <Widget>[
-                Center(
-                  child: Text(
-                    'Recognized Words',
-                    style: TextStyle(fontSize: 22.0),
-                  ),
-                ),
-                Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      Container(
-                        color: Theme.of(context).selectedRowColor,
-                        child: Center(
-                          child: Text(
-                            lastWords,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      // Positioned.fill(
-                      //   bottom: 10,
-                      //   child: Align(
-                      //     alignment: Alignment.bottomCenter,
-                      //     child: Container(
-                      //       width: 40,
-                      //       height: 40,
-                      //       alignment: Alignment.center,
-                      //       decoration: BoxDecoration(
-                      //         boxShadow: [
-                      //           BoxShadow(
-                      //               blurRadius: .26,
-                      //               spreadRadius: level * 1.5,
-                      //               color: Colors.black.withOpacity(.05))
-                      //         ],
-                      //         color: Colors.white,
-                      //         borderRadius:
-                      //         BorderRadius.all(Radius.circular(50)),
-                      //       ),
-                      //       child: IconButton(
-                      //         icon: Icon(Icons.mic),
-                      //         onPressed: () => null,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      Container(
-                        color: Theme.of(context).selectedRowColor,
-                        child: Center(
-                          child: Text(
-                            staticResponse,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      // Positioned.fill(
-                      //   bottom: 10,
-                      //   child: Align(
-                      //     alignment: Alignment.bottomCenter,
-                      //     child: Container(
-                      //       width: 40,
-                      //       height: 40,
-                      //       alignment: Alignment.center,
-                      //       decoration: BoxDecoration(
-                      //         boxShadow: [
-                      //           BoxShadow(
-                      //               blurRadius: .26,
-                      //               spreadRadius: level * 1.5,
-                      //               color: Colors.black.withOpacity(.05))
-                      //         ],
-                      //         color: Colors.white,
-                      //         borderRadius:
-                      //         BorderRadius.all(Radius.circular(50)),
-                      //       ),
-                      //       child: IconButton(
-                      //         icon: Icon(Icons.mic),
-                      //         onPressed: () => null,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Expanded(
-          //   flex: 1,
-          //   child: Column(
-          //     children: <Widget>[
-          //       Center(
-          //         child: Text(
-          //           'Error Status',
-          //           style: TextStyle(fontSize: 22.0),
-          //         ),
-          //       ),
-          //       Center(
-          //         child: Text(lastError),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            color: Theme.of(context).backgroundColor,
-            child: Center(
-              child: speech.isListening
-                  ? Text(
-                "I'm listening...",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              )
-                  : Text(
-                'Not listening',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ]),
-      ),
-    );
+  Future<void> requestForProductTitle() async {
+    Translation translation;
+    String response = "Please tell me which item do you want to buy?";
+    if (language != 'en_US') {
+      translation = await translator.translate(response, from: 'en', to: _currentLocaleId.substring(0, 2));
+      response = translation.toString();
+      print("#blackdiamond response $response");
+    }
+    _newVoiceText = response;
+    print("#blackdiamond : $_newVoiceText");
+    await _speak();
+  }
+
+  Future<void> listenForProductTitle() async {
+    lastWords = '';
+    lastError = '';
+
+    await speech.listen(
+        onResult: productTitleListener,
+        listenFor: Duration(seconds: 12),
+        pauseFor: Duration(seconds: 6),
+        partialResults: false,
+        localeId: _currentLocaleId,
+        onSoundLevelChange: soundLevelListener,
+        cancelOnError: true,
+        listenMode: ListenMode.confirmation);
+  }
+
+  ProductDao get_product_from_cache(String title) {
+    ProductDao product;
+
+    if (products != null && products.isNotEmpty) {
+      print("products in cache $title => " + products.length.toString());
+      for (ProductDao prd in products) {
+        if (title.toLowerCase() == prd.productTitle.toLowerCase()) {
+          product = prd;
+          break;
+        }
+      }
+    }
+
+    return product;
+  }
+
+  Future<void> productTitleListener(SpeechRecognitionResult result) async {
+    ++resultListened;
+    print('Product Title Listener $resultListened');
+
+    Translation translation;
+    String title = result.recognizedWords.trim().toLowerCase();
+
+    lastWords = '${result.recognizedWords} - ${result.finalResult}';
+    print("#blackdiamond product title => $title");
+
+    ///
+    if (title == "dinkle") {
+      title = "dinkel";
+    }
+    ///
+
+    // if (_currentLocaleId == 'en_US') {
+    //   translation = await translator.translate(title, from: 'en', to: 'de');
+    //   title = translation.toString().trim().toLowerCase();
+    //   print("#blackdiamond product title 2 => $title");
+    //   Map<String, String> replacements = Map<String, String>();
+    //   String key;
+    //   RegExp(r"(spel\w+\sbread)|(dark\w+\sbread)").allMatches(title).forEach((match) {
+    //     key = title.substring(match.start, match.end).trim();
+    //     print("#blackdiamond key: $key");
+    //     replacements.putIfAbsent(key, () => "");
+    //   });
+    //
+    //   if (replacements.containsKey("spelled bread")) {
+    //     replacements.update("spelled bread", (v) => v = "dinkelbrot" );
+    //   }
+    //
+    //   if (replacements.containsKey("dark bread")) {
+    //     replacements.update("dark bread", (v) => v = "dinkelbrot" );
+    //   }
+    //
+    //   replacements.forEach((key, value) => title = title.replaceAll(key, value));
+    //   print("#blackdiamond product title 3 => $title");
+    // }
+
+    ProductDao product = get_product_from_cache(title);
+    if (product != null && product.productId > 0) {
+      products = [product];
+    } else {
+      // ToDo fetch organization id from database
+      int organizationId = 1;
+      products = await productBL.get_products_by_title(1, title);
+    }
+
+    isNeedToRequestAgain = true;
+
+    if (products.isNotEmpty) {
+      if (products.length == 1) {
+        _newVoiceText = "Here is your item of choice: each " + products.first.productTitle +
+                        " price is " + products.first.unitPrice.toString() + " euro";
+        isNeedToRequestAgain = false;
+      } else {
+        _newVoiceText = "I found some similar items that you are looking for. " +
+                        "They are " + products.map((e) => e.productTitle).join(", ") + ". ";
+      }
+    } else {
+      _newVoiceText = "Sorry, I can not find any items of your choice.";
+    }
+
+    if (_currentLocaleId != 'en_US' && _newVoiceText.isNotEmpty) {
+      translation = await translator.translate(_newVoiceText, from: 'en', to: _currentLocaleId.substring(0, 2));
+      _newVoiceText = translation.toString();
+    }
+
+    print("#blackdiamond product lookup result => $_newVoiceText");
+
+    await _speak();
+    return Future.value(isNeedToRequestAgain);
   }
 
   Future<void> startListening() async {

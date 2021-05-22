@@ -7,6 +7,14 @@ import 'package:dartssh/transport.dart';
 class DBConnector {
 
   SSHClient client;
+  
+  // AWS 
+  /*
+  db-preisschild.cygfsaorvowd.eu-central-1.rds.amazonaws.com
+  username: admin_mahbubur
+  password: Dark_Fantasy_2021
+  db_name: Preisschild
+  */
 
   // ignore: non_constant_identifier_names
   static final Map<String, String> ssh_credentials = {

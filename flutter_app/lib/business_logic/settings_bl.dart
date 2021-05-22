@@ -5,8 +5,13 @@ class SettingsBL {
   final SettingsService service = SettingsService();
 
   //TODO try to make generic bl functions
-  Future<void> create_settings(SettingsDao settings) async {
-    await service.create_settings(settings);
+  Future<int> create_settings(int organizationId, SettingsDao settings) async {
+    int settingsId = await service.create_settings(organizationId, settings);
+    return Future.value(settingsId);
+  }
+
+  Future<void> update_settings(SettingsDao settings) async {
+    await service.update_settings(settings);
   }
 
   Future<SettingsDao> get_settings_by_org_id(int organizationId) async {

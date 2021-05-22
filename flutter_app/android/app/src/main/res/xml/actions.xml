@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<actions>
+    <action intentName="actions.intent.OPEN_APP_FEATURE">
+
+        <parameter name="feature">
+            <entity-set-reference entitySetId="FeatureEntitySet" />
+        </parameter>
+
+        <fulfillment urlTemplate="{@url}"/>
+        <fulfillment urlTemplate="https://preisschild.androidappactions.com/vocal-assistant"/>
+
+    </action>
+
+    <entity-set entitySetId="FeatureEntitySet">
+        <entity  url="https://preisschild.androidappactions.com/vocal-assistant"
+            name="vocal assistant" alternateName="@array/vocal_assistant_synonyms"/>
+    </entity-set>
+</actions>
