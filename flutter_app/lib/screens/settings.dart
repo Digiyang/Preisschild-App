@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Bakerys/Weichardt/screens/shopInventoryScrenn.dart';
 import 'package:flutter_app/business_logic/settings_bl.dart';
 import 'package:flutter_app/data_access/settings_dao.dart';
 
@@ -13,6 +14,8 @@ class Settings extends StatefulWidget {
 }
 
 class SettingsFormState extends State<Settings> {
+  final ShopInventoryHome homeScreen = ShopInventoryHome();
+
   String _currentLocaleId = 'de_DE';
   List<LocaleName> _localeNames = [LocaleName('en_US', 'English'), LocaleName('de_DE', 'Deutsch')];
 
@@ -111,9 +114,7 @@ class SettingsFormState extends State<Settings> {
                 child: Row(
                   children: <Widget>[
                     Expanded(flex: 1, child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: () => {Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) { return homeScreen; }))},
                       child: Text('Back'),
                     )),
                     Expanded(flex: 1, child: SizedBox(width: 6,)),

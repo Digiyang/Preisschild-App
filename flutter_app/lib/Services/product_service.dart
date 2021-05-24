@@ -149,7 +149,7 @@ class ProductService {
         user: 'admin_mahbubur',
         password: 'Dark_Fantasy_2021',
         db: 'Preisschild'));
-
+    print("get_products_by_title ($title) => ");
     String query = "SELECT	prd.id, " +
                     "       prd.title, " +
                     "       REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') as edited_title, " +

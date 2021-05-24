@@ -241,8 +241,9 @@ class VocalAssistant {
     print('Product Title Listener $resultListened');
 
     Translation translation;
-    String title = result.recognizedWords.trim().toLowerCase();
-    title = title.replaceAll(RegExp(r"(\p\s)*"), "");
+    String title = result.recognizedWords.toLowerCase();
+    title = title.replaceAll("ss", "ß")
+                  .replaceAll(RegExp(r"[\p{Punct}\s]*"), "");
 
     lastWords = '${result.recognizedWords} - ${result.finalResult}';
     print("#blackdiamond product title => $title");
