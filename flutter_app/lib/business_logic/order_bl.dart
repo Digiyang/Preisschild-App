@@ -63,17 +63,17 @@ class OrderBL {
 void main() async {
   // List<OrderDao> details = await OrderBL().get_all_orders();
   // List<OrderDao> details = await OrderBL().get_orders_by_id("cd123456");
-  List<OrderDao> details = await OrderBL().get_orders_by_date(1, DateTime.parse("2021-03-05"));
+  // List<OrderDao> details = await OrderBL().get_orders_by_date(1, DateTime.parse("2021-03-05"));
   // List<OrderDao> details = await OrderBL().get_orders_by_status(1, "RECEIVE");
   // List<OrderDao> details = await OrderBL().get_orders_by_status_and_date(1, "RECEIVE", DateTime.parse("2021-03-05"));
 
-  // OrderBL orderBL = OrderBL();
-  //
-  // String orderId = "xx123456";
-  // List<OrderItem> items = [OrderItem(1, 2), OrderItem(2, 2)];
+  OrderBL orderBL = OrderBL();
 
-  // await orderBL.create_order_with_items(1, orderId, items);
-  // List<OrderDao> details = await orderBL.get_orders_by_id(orderId);
+  String orderId = "ef666622";
+  List<OrderItem> items = [OrderItem(1, 2), OrderItem(2, 2)];
+
+  await orderBL.create_order_with_items(1, orderId, items);
+  List<OrderDao> details = await orderBL.get_orders_by_id(orderId);
 
   // List<OrderDao> details = await orderBL.get_orders_by_date(1, DateTime.now());
   // List<OrderDao> details = await orderBL.get_orders_by_status(1, "CONFIRM");

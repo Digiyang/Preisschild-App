@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_app/data_access/db_connector.dart';
 import 'package:flutter_app/data_access/order_dao.dart';
 import 'package:flutter_app/data_access/order_item.dart';
+import 'package:mysql1/mysql1.dart';
 
 class OrderService {
 
@@ -52,26 +53,53 @@ class OrderService {
 
   Future<List<OrderDao>> get_orders_by_id(String orderId) async {
 
-    var query = baseQuery + " AND ord.order_id = '$orderId'";
+    // Open a connection
+    final conn = await MySqlConnection.connect(ConnectionSettings(host: 'db-preisschild.cygfsaorvowd.eu-central-1.rds.amazonaws.com',
+        port: 3306,
+        user: 'admin_mahbubur',
+        password: 'Dark_Fantasy_2021',
+        db: 'Preisschild'));
 
-    var exitcode = await connector.execute_through_ssh(query, (_ , v) {
-      if (v.trim() == "logout") {
-        orderStream.close();
-      }
+    // var query = baseQuery + " AND ord.order_id = '$orderId'";
+    var query = baseQuery + " AND ord.order_id = ?";
 
-      List<OrderDao> details = OrderDao.convert(v);
+    // var exitcode = await connector.execute_through_ssh(query, (_ , v) {
+    //   if (v.trim() == "logout") {
+    //     orderStream.close();
+    //   }
+    //
+    //   List<OrderDao> details = OrderDao.convert(v);
+    //
+    //   if (details.length > 0) {
+    //     for (OrderDao od in details) {
+    //       orderStream.add(od);
+    //     }
+    //   }
+    // });
+    //
+    // List<OrderDao> details = [];
+    // await for (OrderDao o in orderStream.stream) {
+    //   details.add(o);
+    // }
 
-      if (details.length > 0) {
-        for (OrderDao od in details) {
-          orderStream.add(od);
-        }
-      }
-    });
+    var result = await conn.query(query, [orderId]);
 
     List<OrderDao> details = [];
-    await for (OrderDao o in orderStream.stream) {
-      details.add(o);
+
+    print("get_orders_by_id ($orderId) => " + result.length.toString());
+
+    if (result.isNotEmpty) {
+      for (ResultRow r in result) {
+        // ToDo update order dao with id attribute and also fix order dao attributes
+        details.add(OrderDao(r.fields["order_id"], r.fields["order_date"],
+                              r.fields["total_price"], r.fields["order_status"],
+                              r.fields["item_name"], r.fields["item_quantity"],
+                              r.fields["item_price"]));
+      }
     }
+
+    // Finally, close the connection
+    await conn.close();
 
     return Future.value(details);
   }
@@ -194,17 +222,30 @@ class OrderService {
   }
 
   Future<void> create_order_with_items(int organizationId, String orderId, List<OrderItem> items) async {
-    var query = "INSERT INTO Preisschild.tbl_order(organization_id, order_id, date) VALUES ($organizationId, '$orderId', CURRENT_TIMESTAMP); ";
-    StringBuffer itemQuries = StringBuffer();
+    // Open a connection
+    final conn = await MySqlConnection.connect(ConnectionSettings(host: 'db-preisschild.cygfsaorvowd.eu-central-1.rds.amazonaws.com',
+        port: 3306,
+        user: 'admin_mahbubur',
+        password: 'Dark_Fantasy_2021',
+        db: 'Preisschild'));
+
+    // var query = "INSERT INTO Preisschild.tbl_order(organization_id, order_id, date) VALUES ($organizationId, '$orderId', CURRENT_TIMESTAMP)";
+    var query = "INSERT INTO Preisschild.tbl_order(organization_id, order_id, date) VALUES (?, ?, CURRENT_TIMESTAMP)";
+    await conn.query(query, [organizationId, orderId]);
+
+    // StringBuffer itemQuries = StringBuffer();
 
     for (OrderItem oi in items) {
       int productId = oi.productId;
       int quantity = oi.itemQuantity;
-      itemQuries.write("CALL create_order_item('$orderId', $productId, $quantity); ");
+      // itemQuries.write("CALL create_order_item('$orderId', $productId, $quantity); ");
+      await conn.query("CALL create_order_item(?, ?, ?)", [orderId, productId, quantity]);
     }
 
-    query = query + itemQuries.toString();
-    var exitcode = await connector.execute_through_ssh(query, (_ , v) {});
+    // var exitcode = await connector.execute_through_ssh(query, (_ , v) {});
+
+    // Finally, close the connection
+    await conn.close();
   }
 
   Future<void> update_order_status(String orderId) async {

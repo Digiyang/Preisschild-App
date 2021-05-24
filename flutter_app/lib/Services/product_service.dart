@@ -150,11 +150,15 @@ class ProductService {
         password: 'Dark_Fantasy_2021',
         db: 'Preisschild'));
 
-    String query = "SELECT	prd.id, prd.title, prd.unit_price, prd.quantity " +
+    String query = "SELECT	prd.id, " +
+                    "       prd.title, " +
+                    "       REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') as edited_title, " +
+                    "       prd.unit_price, " +
+                    "       prd.quantity " +
                     " FROM 	Preisschild.tbl_product as prd " +
                     " WHERE 	prd.organization_id = ? " +
                     " AND 	prd.quantity > 2 " +
-                    " AND 	LOWER(prd.title) LIKE ? " +
+                    " AND 	REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') LIKE ? " +
                     " LIMIT	2";
     var result = await conn.query(query, [organizationId, "%$title%"]);
 
@@ -164,11 +168,13 @@ class ProductService {
 
     if (result.isNotEmpty) {
       for (ResultRow r in result) {
-        details.add(ProductDao(r.fields["id"], r.fields["title"],
-            null, 0.00,
-            r.fields["unit_price"], r.fields["quantity"],
-            null, null,
-            null, null));
+        ProductDao prd = ProductDao(r.fields["id"], r.fields["title"],
+                                    null, 0.00,
+                                    r.fields["unit_price"], r.fields["quantity"],
+                                    null, null,
+                                    null, null);
+        prd.productEditedTitle = r.fields["edited_title"];
+        details.add(prd);
       }
     }
 

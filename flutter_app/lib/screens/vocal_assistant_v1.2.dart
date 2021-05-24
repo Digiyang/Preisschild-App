@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter_app/business_logic/order_bl.dart';
+import 'package:flutter_app/data_access/order_item.dart';
 import 'package:flutter_app/data_access/product_dao.dart';
 import 'package:flutter_app/data_access/settings_dao.dart';
-import 'package:flutter_app/screens/vocal_assistant.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -59,6 +59,7 @@ class VocalAssistant {
   bool get isWeb => kIsWeb;
   ////////////////////////////////////////////////////////////////
   final ProductBL productBL = ProductBL();
+  final OrderBL orderBL = OrderBL();
   List<ProductDao> products;
   bool isNeedToRequestAgain = true;
   /////////////////////////////////////////////////////////////////
@@ -175,13 +176,13 @@ class VocalAssistant {
 
     // Welcome Text
     _newVoiceText = settings.welcomeSpeech;
+    print("#blackdiamond welcome text => $_newVoiceText");
     Translation translation;
     if (_currentLocaleId != 'en_US') {
       translation = await translator.translate(_newVoiceText, from: 'en', to: _currentLocaleId.substring(0, 2));
-      _newVoiceText = translation.toString().trim().toLowerCase();
+      _newVoiceText = translation.toString().trim();
+      print("#blackdiamond welcome text (after translation) => $_newVoiceText");
     }
-
-    print("#blackdiamond : $_newVoiceText");
 
     await _speak();
     _hasSpeech = hasSpeech;
@@ -189,14 +190,13 @@ class VocalAssistant {
 
   Future<void> requestForProductTitle() async {
     Translation translation;
-    String response = "Please tell me which item do you want to buy?";
+    _newVoiceText = "Please tell me which item do you want to buy?";
+    print("#blackdiamond product title => $_newVoiceText");
     if (language != 'en_US') {
-      translation = await translator.translate(response, from: 'en', to: _currentLocaleId.substring(0, 2));
-      response = translation.toString();
-      print("#blackdiamond response $response");
+      translation = await translator.translate(_newVoiceText, from: 'en', to: _currentLocaleId.substring(0, 2));
+      _newVoiceText = translation.toString().trim();
+      print("#blackdiamond product title (after translation) => $_newVoiceText");
     }
-    _newVoiceText = response;
-    print("#blackdiamond : $_newVoiceText");
     await _speak();
   }
 
@@ -218,11 +218,16 @@ class VocalAssistant {
   ProductDao get_product_from_cache(String title) {
     ProductDao product;
 
+    if (products == null || products.isEmpty) {
+      print("$title: Cache Lookup => Now products in cache => 0");
+    }
+
     if (products != null && products.isNotEmpty) {
-      print("products in cache $title => " + products.length.toString());
+      print("$title: Cache Lookup => Now products in cache => " + products.length.toString());
       for (ProductDao prd in products) {
-        if (title.toLowerCase() == prd.productTitle.toLowerCase()) {
+        if (prd.productEditedTitle.contains(title)) {
           product = prd;
+          print("$title: Cache Lookup => Product Found");
           break;
         }
       }
@@ -237,46 +242,19 @@ class VocalAssistant {
 
     Translation translation;
     String title = result.recognizedWords.trim().toLowerCase();
+    title = title.replaceAll(RegExp(r"(\p\s)*"), "");
 
     lastWords = '${result.recognizedWords} - ${result.finalResult}';
     print("#blackdiamond product title => $title");
 
-    ///
-    if (title == "dinkle") {
-      title = "dinkel";
-    }
-    ///
-
-    // if (_currentLocaleId == 'en_US') {
-    //   translation = await translator.translate(title, from: 'en', to: 'de');
-    //   title = translation.toString().trim().toLowerCase();
-    //   print("#blackdiamond product title 2 => $title");
-    //   Map<String, String> replacements = Map<String, String>();
-    //   String key;
-    //   RegExp(r"(spel\w+\sbread)|(dark\w+\sbread)").allMatches(title).forEach((match) {
-    //     key = title.substring(match.start, match.end).trim();
-    //     print("#blackdiamond key: $key");
-    //     replacements.putIfAbsent(key, () => "");
-    //   });
-    //
-    //   if (replacements.containsKey("spelled bread")) {
-    //     replacements.update("spelled bread", (v) => v = "dinkelbrot" );
-    //   }
-    //
-    //   if (replacements.containsKey("dark bread")) {
-    //     replacements.update("dark bread", (v) => v = "dinkelbrot" );
-    //   }
-    //
-    //   replacements.forEach((key, value) => title = title.replaceAll(key, value));
-    //   print("#blackdiamond product title 3 => $title");
-    // }
-
+    // Product lookup in the cache
     ProductDao product = get_product_from_cache(title);
     if (product != null && product.productId > 0) {
       products = [product];
     } else {
       // ToDo fetch organization id from database
       int organizationId = 1;
+      // Product lookup in the AWS RDS
       products = await productBL.get_products_by_title(1, title);
     }
 
@@ -289,18 +267,106 @@ class VocalAssistant {
         isNeedToRequestAgain = false;
       } else {
         _newVoiceText = "I found some similar items that you are looking for. " +
-                        "They are " + products.map((e) => e.productTitle).join(", ") + ". ";
+                        "They are " + products.map((e) => e.productTitle).join(" and ") + ". ";
       }
     } else {
       _newVoiceText = "Sorry, I can not find any items of your choice.";
     }
 
+    print("#blackdiamond product lookup result => $_newVoiceText");
+
     if (_currentLocaleId != 'en_US' && _newVoiceText.isNotEmpty) {
       translation = await translator.translate(_newVoiceText, from: 'en', to: _currentLocaleId.substring(0, 2));
-      _newVoiceText = translation.toString();
+      _newVoiceText = translation.toString().trim();
+      print("#blackdiamond product lookup result (after translation) => $_newVoiceText");
     }
 
-    print("#blackdiamond product lookup result => $_newVoiceText");
+    await _speak();
+    return Future.value(isNeedToRequestAgain);
+  }
+
+  Future<void> requestForConfirmation() async {
+    Translation translation;
+    _newVoiceText = "Please tell me how many do you want to buy?";
+
+    print("#blackdiamond confirmation => $_newVoiceText");
+
+    if (language != 'en_US') {
+      translation = await translator.translate(_newVoiceText, from: 'en', to: _currentLocaleId.substring(0, 2));
+      _newVoiceText = translation.toString().trim();
+      print("#blackdiamond confirmation (after translation) => $_newVoiceText");
+    }
+
+    await _speak();
+  }
+
+  Future<void> listenForConfirmation() async {
+    lastWords = '';
+    lastError = '';
+
+    await speech.listen(
+        onResult: placeOrderListener,
+        listenFor: Duration(seconds: 12),
+        pauseFor: Duration(seconds: 6),
+        partialResults: false,
+        localeId: _currentLocaleId,
+        onSoundLevelChange: soundLevelListener,
+        cancelOnError: true,
+        listenMode: ListenMode.confirmation);
+  }
+
+  Future<void> placeOrderListener(SpeechRecognitionResult result) async {
+    ++resultListened;
+    print('Place Order Listener $resultListened');
+
+    Translation translation;
+    String quantity = result.recognizedWords.trim().toLowerCase();
+
+    lastWords = '${result.recognizedWords} - ${result.finalResult}';
+    print("#blackdiamond product quantity => $quantity");
+
+    if (_currentLocaleId != 'en_US') {
+      Translation translation = await translator.translate(quantity, from: _currentLocaleId.substring(0, 2), to: 'en');
+      quantity = translation.toString().trim().toLowerCase();
+      print("#blackdiamond product quantity (after translation) => $quantity");
+    }
+
+    if (quantity.contains("number to")) {
+      quantity = quantity.replaceAll("number to", "number two");
+    }
+
+    if (quantity.contains("to")) {
+      quantity = quantity.replaceAll("to", "two");
+    }
+
+    quantity = quantity.replaceAll("number ", "").replaceAll("one", "1")
+        .replaceAll("two", "2").replaceAll("three", "3")
+        .replaceAll("four", "4").replaceAll("five", "5")
+        .replaceAll("six", "6").replaceAll("seven", "7")
+        .replaceAll("eight", "8").replaceAll("nine", "9");
+
+    // ToDo fetch organization id from database
+    int organizationId = 1;
+    // ToDo generate QR-Code and use it as orderId
+    String orderId = "BASH-" + (new Random().nextInt(999999) + 100000).toString();
+    // ToDo feature to add more than one items in the order list
+    // ToDo (instance variable product list has only one element at the end, will be needed to sperate and use another list for selected products)
+    await orderBL.create_order_with_items(organizationId, orderId, [OrderItem(products.first.productId, int.parse(quantity))]);
+
+    isNeedToRequestAgain = true;
+
+    double totalPrice = int.parse(quantity) * products.first.unitPrice;
+    _newVoiceText = "Your order is confirmed and total price is " + totalPrice.toStringAsFixed(2) + " euro";
+    isNeedToRequestAgain = false;
+
+    print("#blackdiamond place order result => $_newVoiceText");
+
+    if (_currentLocaleId != 'en_US' && _newVoiceText.isNotEmpty) {
+      translation = await translator.translate(_newVoiceText, from: 'en', to: _currentLocaleId.substring(0, 2));
+      _newVoiceText = translation.toString().trim();
+
+      print("#blackdiamond place order result (after translation) => $_newVoiceText");
+    }
 
     await _speak();
     return Future.value(isNeedToRequestAgain);
@@ -333,224 +399,11 @@ class VocalAssistant {
     level = 0.0;
   }
 
-  Future<String> generateResponse(String request, String locale) async {
-    Translation translation;
-
-    request = request.trim().toLowerCase();
-    print("#blackdiamond request 1 $request");
-
-    if (locale != 'en_US') {
-      translation = await translator.translate(request, from: 'de', to: 'en');
-      request = translation.toString().trim().toLowerCase();
-      print("#blackdiamond request 2 $request");
-      Map<String, String> replacements = Map<String, String>();
-      String key;
-      RegExp(r"(spel\w+\sbread)|(dark\w+\sbread)").allMatches(request).forEach((match) {
-        key = request.substring(match.start, match.end).trim();
-        print("#blackdiamond key: $key");
-        replacements.putIfAbsent(key, () => "");
-      });
-
-      if (replacements.containsKey("spelled bread")) {
-        replacements.update("spelled bread", (v) => v = "dinkelbrot" );
-      }
-
-      if (replacements.containsKey("dark bread")) {
-        replacements.update("dark bread", (v) => v = "dinkelbrot" );
-      }
-
-      replacements.forEach((key, value) => request = request.replaceAll(key, value));
-      print("#blackdiamond request $request");
-    }
-
-    String response = '';
-
-    switch(request) {
-      case "hello i want to buy bread": response = "Here are some breads: Brötchenkonfekt, Dinkelbrötchen, Doppelte, Kräuterbrötchen, Kaiserbrötchen, Ciabatta, Croissant.";
-                                          break;
-
-      case "please tell me dinkelbrot price": response = "Each Dinkelbrötchen price is 1 euro 30 cent";
-                                                  break;
-
-      case "please give 6 dinkelbrot":
-      case "please give six dinkelbrot": response = "Okay 6 Dinkelbrötchen are selected, total price is 7 euro 80 cent. Do you want to pay by card or paypal?";
-                                                      break;
-
-      case "please tell me ciabatta price": response = "Each Ciabatta price is 1 euro 45 cent";
-                                                  break;
-
-      case "please give 6 ciabatta":
-      case "please give six ciabatta": response = "Okay 6 Ciabatta are selected, total price is 8 euro 70 cent. Do you want to pay by card or paypal?";
-                                        break;
-
-      case "please tell me dinkelbrot and ciabatta price":  response = "Each Dinkelbrötchen price is 1 euro 30 cent and Each Ciabatta price is 1 euro 45 cent";
-                                                              break;
-
-      case "please give 6 dinkelbrot and 6 ciabatta":
-      case "please give 6 dinkelbrot & 6 ciabatta":
-
-      case "please give 6 dinkelbrot and six ciabatta":
-      case "please give 6 dinkelbrot & six ciabatta":
-
-      case "please give six dinkelbrot and 6 ciabatta":
-      case "please give six dinkelbrot & 6 ciabatta":
-
-      case "please give six dinkelbrot and six ciabatta":
-      case "please give six dinkelbrot & six ciabatta": response = "Okay 6 Dinkelbrötchen and 6 Ciabatta are selected, total price is 16 euro 50 cent. Do you want to pay by card or paypal?";
-                                                            break;
-
-      case "credit card":
-      case "creditcard":
-
-      case "debitcard":
-      case "debit card": response = "Please enter your card number and pin number";
-                          break;
-      case "pay pal":
-      case "paypal": response = "Please enter your paypal username and password";
-                      break;
-
-      case "credit card one two and one four":
-      case "credit card one two & one four":
-      case "creditcard one two and one four":
-      case "creditcard one two & one four":
-
-      case "credit card 12 and 14":
-      case "credit card one two and 14":
-      case "credit card 12 and one four":
-
-      case "credit card 12 & 14":
-      case "credit card one two & 14":
-      case "credit card 12 & one four":
-
-      case "credit card 1 2 and 1 4":
-      case "credit card one two and 1 4":
-      case "credit card 1 2 and one four":
-
-      case "credit card 1 2 & 1 4":
-      case "credit card one two & 1 4":
-      case "credit card 1 2 & one four":
-
-      case "creditcard 12 and 14":
-      case "creditcard one two and 14":
-      case "creditcard 12 and one four":
-
-      case "creditcard 12 & 14":
-      case "creditcard one two & 14":
-      case "creditcard 12 & one four":
-
-      case "creditcard 1 2 and 1 4":
-      case "creditcard one two and 1 4":
-      case "creditcard 1 2 and one four":
-
-      case "creditcard 1 2 & 1 4":
-      case "creditcard one two & 1 4":
-      case "creditcard 1 2 & one four":
-
-      case "debit card one two and one four":
-      case "debit card one two & one four":
-      case "debitcard one two and one four":
-      case "debitcard one two & one four":
-
-      case "debit card 12 and 14":
-      case "debit card one two and 14":
-      case "debit card 12 and one four":
-
-      case "debit card 12 & 14":
-      case "debit card one two & 14":
-      case "debit card 12 & one four":
-
-      case "debit card 1 2 and 1 4":
-      case "debit card one two and 1 4":
-      case "debit card 1 2 and one four":
-
-      case "debit card 1 2 & 1 4":
-      case "debit card one two & 1 4":
-      case "debit card 1 2 & one four":
-
-      case "debitcard 12 and 14":
-      case "debitcard one two and 14":
-      case "debitcard 12 and one four":
-
-      case "debitcard 12 & 14":
-      case "debitcard one two & 14":
-      case "debitcard 12 & one four":
-
-      case "debitcard 1 2 and 1 4":
-      case "debitcard one two and 1 4":
-      case "debitcard 1 2 and one four":
-
-      case "debitcard 1 2 & 1 4":
-      case "debitcard one two & 1 4":
-      case "debitcard 1 2 & one four":
-
-      case "paypal blackdiamond and 14":
-      case "paypal black diamond and 14":
-      case "paypal blackdiamond and 1 4":
-      case "paypal black diamond and 1 4":
-
-      case "pay pal blackdiamond and 14":
-      case "pay pal black diamond and 14":
-      case "pay pal blackdiamond and 1 4":
-      case "pay pal black diamond and 1 4":
-
-      case "paypal blackdiamond & 14":
-      case "paypal black diamond & 14":
-      case "paypal blackdiamond & 1 4":
-      case "paypal black diamond & 1 4":
-
-      case "pay pal blackdiamond & 14":
-      case "pay pal black diamond & 14":
-      case "pay pal blackdiamond & 1 4":
-      case "pay pal black diamond & 1 4":
-
-      case "paypal blackdiamond & one four":
-      case "paypal blackdiamond & one 4":
-      case "paypal blackdiamond & 1 four":
-
-      case "paypal black diamond & one four":
-      case "paypal black diamond & one 4":
-      case "paypal black diamond & 1 four":
-
-      case "pay pal blackdiamond & one four":
-      case "pay pal blackdiamond & one 4":
-      case "pay pal blackdiamond & 1 four":
-
-      case "pay pal black diamond & one four":
-      case "pay pal black diamond & one 4":
-      case "pay pal black diamond & 1 four":
-
-      case "paypal blackdiamond and one four":
-      case "paypal blackdiamond and one 4":
-      case "paypal blackdiamond and 1 four":
-
-      case "paypal black diamond and one four":
-      case "paypal black diamond and one 4":
-      case "paypal black diamond and 1 four":
-
-      case "pay pal blackdiamond and one four":
-      case "pay pal blackdiamond and one 4":
-      case "pay pal blackdiamond and 1 four":
-
-      case "pay pal black diamond and one four":
-      case "pay pal black diamond and one 4":
-      case "pay pal black diamond and 1 four": response = "Thank you for payment, here are your breads. Have a nice day.";
-                                               break;
-    }
-
-    if (locale != 'en_US' && response.isNotEmpty) {
-      translation = await translator.translate(response, from: 'en', to: 'de');
-      response = translation.toString();
-      print("#blackdiamond response $response");
-    }
-
-    return Future.value(response);
-  }
-
   Future<void> resultListener(SpeechRecognitionResult result) async {
     ++resultListened;
     print('Result listener $resultListened');
 
-    _newVoiceText = await generateResponse(result.recognizedWords, _currentLocaleId);
+    _newVoiceText = "Hello World";
     await _speak();
 
     lastWords = '${result.recognizedWords} - ${result.finalResult}';
@@ -573,18 +426,5 @@ class VocalAssistant {
     // print(
     // 'Received listener status: $status, listening: ${speech.isListening}');
     lastStatus = '$status';
-  }
-
-  void _switchLang(selectedVal) {
-    _currentLocaleId = selectedVal;
-    //TODO make generic by creating function
-    language = _currentLocaleId;
-    flutterTts.setLanguage(language);
-    if (isAndroid) {
-      flutterTts
-          .isLanguageInstalled(language)
-          .then((value) => isCurrentLanguageInstalled = (value as bool));
-    }
-    print(selectedVal);
   }
 }

@@ -1,6 +1,7 @@
 class ProductDao {
   int id;
   String title;
+  String edited_title;
   String brand;
   double weight; // in gm
   double unit_price;
@@ -34,6 +35,18 @@ class ProductDao {
 
   String get productTitle {
     return title;
+  }
+
+  set productTitle(String title) {
+    this.title = title;
+  }
+
+  String get productEditedTitle {
+    return edited_title;
+  }
+
+  set productEditedTitle(String edited_title) {
+    this.edited_title = edited_title;
   }
 
   String get productBrand {

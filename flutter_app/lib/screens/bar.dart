@@ -84,6 +84,15 @@ class PreisschildBar {
         // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
         await Future.delayed(Duration(seconds: 24));
       }
+      await va.requestForConfirmation();
+      print("#hello va 1.2.4 => " + (va.isListening ? "listening" : "not listening"));
+      if (!va.isListening) {
+        print("#hello va 1.2.5");
+        await va.listenForConfirmation();
+        print("#hello va 1.2.6");
+      }
+      // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
+      await Future.delayed(Duration(seconds: 24));
     }
   }
 }
