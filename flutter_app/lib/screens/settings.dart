@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Bakerys/Weichardt/screens/shopInventoryScrenn.dart';
 import 'package:flutter_app/business_logic/settings_bl.dart';
 import 'package:flutter_app/data_access/settings_dao.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:speech_to_text/speech_to_text.dart';
+
+import '../mainShop.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -32,6 +35,39 @@ class SettingsFormState extends State<Settings> {
 
   final settingsBL = SettingsBL();
   SettingsDao settings;
+
+  //////////////////////////////////////////////
+
+  FToast fToast;
+
+  Widget toast = Container(
+    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(25.0),
+      color: Colors.greenAccent,
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.check),
+        SizedBox(
+          width: 12.0,
+        ),
+        Text("Saved Successfully."),
+      ],
+    ),
+  );
+
+  _showToast() {
+    print("fToast => " + fToast.toString());
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.TOP,
+      toastDuration: Duration(seconds: 2),
+    );
+  }
+
+  //////////////////////////////////////////////
 
   @override
   void initState() {
@@ -133,6 +169,9 @@ class SettingsFormState extends State<Settings> {
                             settings.welcomeSpeech = welcomeTextController.text;
                             update_settings();
                           }
+                          fToast = FToast();
+                          fToast.init(_formKey.currentState.context);
+                          _showToast();
                         }
                       },
                       child: Text('Save'),

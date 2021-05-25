@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/business_logic/settings_bl.dart';
+import 'package:flutter_app/data_access/product_dao.dart';
 import 'package:flutter_app/data_access/settings_dao.dart';
 import 'package:flutter_app/screens/settings.dart';
 
@@ -43,7 +44,7 @@ class PreisschildBar {
           icon: Icon(Icons.mic_none_rounded, size: 30.0),
           // onPressed: () => {Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) { return vocalAssistant; }))},
           onPressed: () {
-              print("start Preisschild VA");
+              print("#blackdiamond start preisschild vocal assistant");
               start_vocal_assistant();
           },
         ),
@@ -55,44 +56,45 @@ class PreisschildBar {
   }
 
   Future<void> start_vocal_assistant() async {
-
     // TODO fetch organization id and organization basic object from database
     // ToDo update organization object with settings
     SettingsDao settings = await SettingsBL().get_settings_by_org_id(1);
-    print(settings.welcomeSpeech);
+    print("#blackdiamond settings language => " + settings.language);
+    print("#blackdiamond settings welcome text => " + settings.welcomeSpeech);
 
     if (!this.is_VA_Initialized) {
-      print("start VA initialization.");
+      print("#blackdiamond start vocal assistant initialization.");
       await this.va.requestForPermissions();
       this.va.initTts();
       await this.va.initSpeechState(settings);
       this.is_VA_Initialized = true;
-      print("end VA initialization.");
+      print("#blackdiamond end vocal assistant initialization.");
     }
 
     if (va.hasSpeech) {
-      va.isNeedToRequestAgain = true;
-      print("#hello va 1.2");
+      await va.sayWelcomeText(settings);
+      va.initProductLookup();
       while(va.isNeedToRequestAgain) {
         await va.requestForProductTitle();
-        print("#hello va 1.2.1 => " + (va.isListening ? "listening" : "not listening"));
         if (!va.isListening) {
-          print("#hello va 1.2.2");
           await va.listenForProductTitle();
-          print("#hello va 1.2.3");
         }
         // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
-        await Future.delayed(Duration(seconds: 24));
+        await Future.delayed(Duration(seconds: 20)); // 24
       }
-      await va.requestForConfirmation();
-      print("#hello va 1.2.4 => " + (va.isListening ? "listening" : "not listening"));
-      if (!va.isListening) {
-        print("#hello va 1.2.5");
-        await va.listenForConfirmation();
-        print("#hello va 1.2.6");
+      if (va.selectedItems.isNotEmpty) {
+        for (ProductDao prd in va.selectedItems) {
+          va.selectedProductId = prd.productId;
+          va.selectedProductUnitPrice = prd.unitPrice;
+          await va.requestForItemQuantityConfirmation(prd.productTitle);
+          if (!va.isListening) {
+            await va.listenForItemQuantityConfirmation();
+          }
+          // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
+          await Future.delayed(Duration(seconds: 20)); // 24
+        }
+        await va.placeOrder();
       }
-      // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
-      await Future.delayed(Duration(seconds: 24));
     }
   }
 }

@@ -149,16 +149,17 @@ class ProductService {
         user: 'admin_mahbubur',
         password: 'Dark_Fantasy_2021',
         db: 'Preisschild'));
-    print("get_products_by_title ($title) => ");
+
     String query = "SELECT	prd.id, " +
                     "       prd.title, " +
-                    "       REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') as edited_title, " +
+                    // "       REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') as edited_title, " +
                     "       prd.unit_price, " +
                     "       prd.quantity " +
                     " FROM 	Preisschild.tbl_product as prd " +
                     " WHERE 	prd.organization_id = ? " +
                     " AND 	prd.quantity > 2 " +
-                    " AND 	REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') LIKE ? " +
+                    // " AND 	REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') LIKE ? " +
+                    " AND   LOWER(prd.title) LIKE ? " +
                     " LIMIT	2";
     var result = await conn.query(query, [organizationId, "%$title%"]);
 

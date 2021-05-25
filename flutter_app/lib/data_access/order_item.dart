@@ -1,5 +1,6 @@
 class OrderItem {
   int product_id;
+  double unit_price;
   int quantity;
 
   OrderItem(int product_id, int quantity) {
@@ -13,5 +14,13 @@ class OrderItem {
 
   int get itemQuantity {
     return quantity;
+  }
+
+  set unitPrice(double unit_price) {
+    this.unit_price = unit_price;
+  }
+
+  double get unitPrice {
+    return unit_price;
   }
 }
