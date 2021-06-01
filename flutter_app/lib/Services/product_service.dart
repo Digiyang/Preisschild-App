@@ -142,7 +142,7 @@ class ProductService {
     return Future.value(details.first);
   }
 
-  Future<List<ProductDao>> get_products_by_title(int organizationId, String title) async {
+  Future<List<ProductDao>> get_products_by_title(int organizationId, String title, int limit) async {
     // Open a connection
     final conn = await MySqlConnection.connect(ConnectionSettings(host: 'db-preisschild.cygfsaorvowd.eu-central-1.rds.amazonaws.com',
         port: 3306,
@@ -160,8 +160,12 @@ class ProductService {
                     " AND 	prd.quantity > 2 " +
                     // " AND 	REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') LIKE ? " +
                     " AND   LOWER(prd.title) LIKE ? " +
-                    " LIMIT	2";
-    var result = await conn.query(query, [organizationId, "%$title%"]);
+                    " LIMIT	?";
+
+    query = "CALL get_products_by_title(" + organizationId.toString() + ", '$title', " + limit.toString() + ")";
+
+    // var result = await conn.query(query, [organizationId, "%$title%", limit]);
+    var result = await conn.query(query);
 
     List<ProductDao> details = [];
 
@@ -174,7 +178,7 @@ class ProductService {
                                     r.fields["unit_price"], r.fields["quantity"],
                                     null, null,
                                     null, null);
-        prd.productEditedTitle = r.fields["edited_title"];
+        // prd.productEditedTitle = r.fields["edited_title"];
         details.add(prd);
       }
     }

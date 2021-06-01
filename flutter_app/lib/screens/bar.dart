@@ -4,7 +4,6 @@ import 'package:flutter_app/data_access/product_dao.dart';
 import 'package:flutter_app/data_access/settings_dao.dart';
 import 'package:flutter_app/screens/settings.dart';
 
-// import 'package:flutter_app/screens/vocal_assistant.dart';
 import 'package:flutter_app/screens/vocal_assistant_v1.2.dart';
 
 class PreisschildBar {
@@ -80,7 +79,7 @@ class PreisschildBar {
           await va.listenForProductTitle();
         }
         // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
-        await Future.delayed(Duration(seconds: 20)); // 24
+        await Future.delayed(Duration(seconds: 16)); // 24, 20
       }
       if (va.selectedItems.isNotEmpty) {
         for (ProductDao prd in va.selectedItems) {
@@ -91,7 +90,7 @@ class PreisschildBar {
             await va.listenForItemQuantityConfirmation();
           }
           // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
-          await Future.delayed(Duration(seconds: 20)); // 24
+          await Future.delayed(Duration(seconds: 16)); // 24, 20
         }
         await va.placeOrder();
       }

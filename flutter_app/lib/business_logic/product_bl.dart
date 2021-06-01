@@ -26,15 +26,15 @@ class ProductBL {
     return Future.value(detail);
   }
 
-  Future<List<ProductDao>> get_products_by_title(int organizationId, String title) async {
-    List<ProductDao> details = await service.get_products_by_title(organizationId, title);
+  Future<List<ProductDao>> get_products_by_title(int organizationId, String title, int limit) async {
+    List<ProductDao> details = await service.get_products_by_title(organizationId, title, limit);
     return Future.value(details);
   }
 }
 
 void main() async {
   // List<ProductDao> details = await ProductBL().get_all_products();
-  List<ProductDao> details = await ProductBL().get_products_by_title(1, "dinkel");
+  List<ProductDao> details = await ProductBL().get_products_by_title(1, "dinkel", 2);
   // List<ProductDao> details = await ProductBL().get_products_by_category(1, "Category 2");
   // List<ProductDao> details = [await ProductBL().get_product_by_id(2)];
   print("Resultset length: " + details.length.toString());

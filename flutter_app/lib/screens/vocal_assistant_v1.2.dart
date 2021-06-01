@@ -296,10 +296,6 @@ class VocalAssistant {
       regconizedWords = translation.toString().trim().toLowerCase();
       print("#blackdiamond recognized words (after translation) => $regconizedWords");
     }
-
-    // ToDo regex
-    // regconizedWords = regconizedWords.replaceAll(RegExp(r"[\p{Punct}\s]*"), "");
-    print("#blackdiamond recognized words => $regconizedWords");
     
     if (regconizedWords.contains("stop") || regconizedWords.contains("no") ||
         regconizedWords.contains("finished") || regconizedWords.contains("enough")) {
@@ -307,10 +303,9 @@ class VocalAssistant {
       return;
     }
 
-    // ToDo regex
-    title = title.replaceAll("ss", "ß").trim();
-                  // .replaceAll(RegExp(r"[\p{Punct}\s]*"), "");
-                  // .replaceAll(RegExp(r"[\s]*"), "");
+    title = title.replaceAll("ss", "ß")
+                  .replaceAll(RegExp(r"[,;/_`~-\s]*"), "");
+
     print("#blackdiamond product title => $title");
 
     // Product lookup in the cache
@@ -322,9 +317,9 @@ class VocalAssistant {
     } else {
       // ToDo fetch organization id from database
       int organizationId = 1;
-
+      int limit = 4;
       // Product lookup in the AWS RDS
-      products = await productBL.get_products_by_title(1, title);
+      products = await productBL.get_products_by_title(1, title, limit);
 
       if (products.isNotEmpty) {
         if (products.length == 1) {
