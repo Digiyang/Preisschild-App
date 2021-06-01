@@ -65,6 +65,7 @@ class VocalAssistant {
   int selectedProductId = 0;
   double selectedProductUnitPrice = 0.0;
   bool isNeedToRequestAgain = true;
+  int cacheLimit = 24;
   /////////////////////////////////////////////////////////////////
 
   bool get hasSpeech {
@@ -264,9 +265,7 @@ class VocalAssistant {
     if (products.isNotEmpty) {
       print("$title: Cache Lookup => Now products in cache => " + products.length.toString());
       for (ProductDao prd in products) {
-        // ToDo enable when regex is prefectly worked
-        // if (prd.productEditedTitle.contains(title)) {
-        if (prd.productTitle.contains(title)) {
+        if (prd.productEditedTitle.contains(title)) {
           product = prd;
           print("$title: Cache Lookup => Product Found");
           break;
@@ -312,23 +311,28 @@ class VocalAssistant {
     ProductDao product = get_product_from_cache(title);
     if (product != null && product.productId > 0) {
       selectedProducts.add(product);
-      _newVoiceText = "Here is your item of choice: each " + product.productTitle +
-                      " price is " + product.unitPrice.toStringAsFixed(2) + " euro";
+      _newVoiceText = "Here is your item of choice: each " + product.formattedProductTitle +
+                      " price is " + ProductDao.splitPriceToEuroAndCent(product.unitPrice);
     } else {
       // ToDo fetch organization id from database
       int organizationId = 1;
       int limit = 4;
       // Product lookup in the AWS RDS
-      products = await productBL.get_products_by_title(1, title, limit);
+      List<ProductDao> productsFromRDS = await productBL.get_products_by_title(1, title, limit);
 
-      if (products.isNotEmpty) {
-        if (products.length == 1) {
-          selectedProducts.add(products.first);
-          _newVoiceText = "Here is your item of choice: each " + products.first.productTitle +
-                          " price is " + products.first.unitPrice.toStringAsFixed(2) + " euro";
+      if (productsFromRDS.isNotEmpty) {
+        if (productsFromRDS.length == 1) {
+          selectedProducts.add(productsFromRDS.first);
+          _newVoiceText = "Here is your item of choice: each " + productsFromRDS.first.formattedProductTitle +
+                          " price is " + ProductDao.splitPriceToEuroAndCent(productsFromRDS.first.unitPrice);
         } else {
           _newVoiceText = "I found some similar items that you are looking for. " +
-                          "They are " + products.map((e) => e.productTitle).join(" and ") + ". ";
+                          "They are " + productsFromRDS.map((e) => e.formattedProductTitle).join(" and ") + ". ";
+        }
+
+        // Update cache
+        if (products.length < cacheLimit) {
+          products.addAll(productsFromRDS);
         }
       } else {
         _newVoiceText = "Sorry, I can not find any items of your choice.";
@@ -440,7 +444,7 @@ class VocalAssistant {
       totalPrice += (oi.unitPrice * oi.itemQuantity);
     }
 
-    _newVoiceText = "Your order is confirmed and total price is " + totalPrice.toStringAsFixed(2) + " euro";
+    _newVoiceText = "Your order is confirmed and total price is " + ProductDao.splitPriceToEuroAndCent(totalPrice);
     print("#blackdiamond place order result => $_newVoiceText");
 
     if (_currentLocaleId != 'en_US' && _newVoiceText.isNotEmpty) {

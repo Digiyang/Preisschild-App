@@ -85,7 +85,7 @@ class PreisschildBar {
         for (ProductDao prd in va.selectedItems) {
           va.selectedProductId = prd.productId;
           va.selectedProductUnitPrice = prd.unitPrice;
-          await va.requestForItemQuantityConfirmation(prd.productTitle);
+          await va.requestForItemQuantityConfirmation(prd.formattedProductTitle);
           if (!va.isListening) {
             await va.listenForItemQuantityConfirmation();
           }

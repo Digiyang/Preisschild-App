@@ -150,19 +150,7 @@ class ProductService {
         password: 'Dark_Fantasy_2021',
         db: 'Preisschild'));
 
-    String query = "SELECT	prd.id, " +
-                    "       prd.title, " +
-                    // "       REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') as edited_title, " +
-                    "       prd.unit_price, " +
-                    "       prd.quantity " +
-                    " FROM 	Preisschild.tbl_product as prd " +
-                    " WHERE 	prd.organization_id = ? " +
-                    " AND 	prd.quantity > 2 " +
-                    // " AND 	REGEXP_REPLACE(LOWER(prd.title), '[[:punct:][:space:]]*', '') LIKE ? " +
-                    " AND   LOWER(prd.title) LIKE ? " +
-                    " LIMIT	?";
-
-    query = "CALL get_products_by_title(" + organizationId.toString() + ", '$title', " + limit.toString() + ")";
+    String query = "CALL get_products_by_title(" + organizationId.toString() + ", '$title', " + limit.toString() + ")";
 
     // var result = await conn.query(query, [organizationId, "%$title%", limit]);
     var result = await conn.query(query);
@@ -174,11 +162,11 @@ class ProductService {
     if (result.isNotEmpty) {
       for (ResultRow r in result) {
         ProductDao prd = ProductDao(r.fields["id"], r.fields["title"],
-                                    null, 0.00,
+                                    null, r.fields["weight"],
                                     r.fields["unit_price"], r.fields["quantity"],
                                     null, null,
                                     null, null);
-        // prd.productEditedTitle = r.fields["edited_title"];
+        prd.productEditedTitle = r.fields["edited_title"].toString();
         details.add(prd);
       }
     }

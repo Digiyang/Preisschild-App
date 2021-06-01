@@ -37,6 +37,10 @@ class ProductDao {
     return title;
   }
 
+  String get formattedProductTitle {
+    return title + (weight == 0.00 ? "" : ", weight is " + weight.toStringAsFixed(2) + " gram");
+  }
+
   set productTitle(String title) {
     this.title = title;
   }
@@ -126,5 +130,10 @@ class ProductDao {
     }
 
     return categories;
+  }
+
+  static String splitPriceToEuroAndCent(double price) {
+    List<String> splitedPrice = price.toStringAsFixed(2).split(".");
+    return splitedPrice[0] + " euro and " + splitedPrice[1] + " cent";
   }
 }
