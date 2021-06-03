@@ -255,7 +255,7 @@ class VocalAssistant {
         listenMode: ListenMode.confirmation);
   }
 
-  ProductDao get_product_from_cache(String title) {
+  ProductDao get_product_from_cache(String title, double weight) {
     ProductDao product;
 
     if (products.isEmpty) {
@@ -265,7 +265,7 @@ class VocalAssistant {
     if (products.isNotEmpty) {
       print("$title: Cache Lookup => Now products in cache => " + products.length.toString());
       for (ProductDao prd in products) {
-        if (prd.productEditedTitle.contains(title)) {
+        if (prd.productEditedTitle.contains(title) && prd.weight == weight) {
           product = prd;
           print("$title: Cache Lookup => Product Found");
           break;
@@ -302,13 +302,25 @@ class VocalAssistant {
       return;
     }
 
+    print("#blackdiamond product title => $title");
+    if (_currentLocaleId != 'de_DE') {
+      translation = await translator.translate(title, from: _currentLocaleId.substring(0, 2), to: 'de');
+      regconizedWords = translation.toString().trim().toLowerCase();
+      print("#blackdiamond product title (after translation) => $regconizedWords");
+    }
+
+    // title = title.split(RegExp(r"[,\s]+[0-9]+(\s*gram){0,1}|(\s*gm){0,1}")).first
     title = title.replaceAll("ss", "ß")
                   .replaceAll(RegExp(r"[,;/_`~-\s]*"), "");
 
-    print("#blackdiamond product title => $title");
+    print("#blackdiamond product title (after regex) => $title");
+
+    double weight = 0.00;
+
+    // ToDo extract weight from title or recognized words
 
     // Product lookup in the cache
-    ProductDao product = get_product_from_cache(title);
+    ProductDao product = get_product_from_cache(title, weight);
     if (product != null && product.productId > 0) {
       selectedProducts.add(product);
       _newVoiceText = "Here is your item of choice: each " + product.formattedProductTitle +
@@ -318,7 +330,7 @@ class VocalAssistant {
       int organizationId = 1;
       int limit = 4;
       // Product lookup in the AWS RDS
-      List<ProductDao> productsFromRDS = await productBL.get_products_by_title(1, title, limit);
+      List<ProductDao> productsFromRDS = await productBL.get_products_by_title(1, title, , limit);
 
       if (productsFromRDS.isNotEmpty) {
         if (productsFromRDS.length == 1) {
@@ -406,11 +418,15 @@ class VocalAssistant {
       quantity = quantity.replaceAll("to", "two");
     }
 
-    quantity = quantity.replaceAll("number ", "").replaceAll("one", "1")
-                      .replaceAll("two", "2").replaceAll("three", "3")
-                      .replaceAll("four", "4").replaceAll("five", "5")
-                      .replaceAll("six", "6").replaceAll("seven", "7")
-                      .replaceAll("eight", "8").replaceAll("nine", "9");
+    quantity = quantity.replaceAll(RegExp(r"[(number)\s]+"), "")
+                      // .replaceAll("hundred", "").replaceAll("thousand", "")
+                      // .replaceAll(RegExp(r"[a-z]{3,5}ty"), "0").replaceAll(RegExp(r"[a-z]{3,5}teen"), "10")
+                      .replaceAll("one", "1").replaceAll("two", "2")
+                      .replaceAll("three", "3").replaceAll("four", "4")
+                      .replaceAll("five", "5").replaceAll("six", "6")
+                      .replaceAll("seven", "7").replaceAll("eight", "8")
+                      .replaceAll("nine", "9").replaceAll("ten", "10")
+                      .replaceAll("eleven", "11").replaceAll("twelve", "12");
 
     var orderItem = OrderItem(selectedProductId, int.parse(quantity));
     orderItem.unitPrice = selectedProductUnitPrice;

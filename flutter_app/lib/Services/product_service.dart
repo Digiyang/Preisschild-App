@@ -142,7 +142,7 @@ class ProductService {
     return Future.value(details.first);
   }
 
-  Future<List<ProductDao>> get_products_by_title(int organizationId, String title, int limit) async {
+  Future<List<ProductDao>> get_products_by_title(int organizationId, String title, double weight, int limit) async {
     // Open a connection
     final conn = await MySqlConnection.connect(ConnectionSettings(host: 'db-preisschild.cygfsaorvowd.eu-central-1.rds.amazonaws.com',
         port: 3306,
@@ -150,7 +150,7 @@ class ProductService {
         password: 'Dark_Fantasy_2021',
         db: 'Preisschild'));
 
-    String query = "CALL get_products_by_title(" + organizationId.toString() + ", '$title', " + limit.toString() + ")";
+    String query = "CALL get_products_by_title(" + organizationId.toString() + ", '$title', " + weight.toStringAsFixed(2) + ", " + limit.toString() + ")";
 
     // var result = await conn.query(query, [organizationId, "%$title%", limit]);
     var result = await conn.query(query);
