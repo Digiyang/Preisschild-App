@@ -79,7 +79,7 @@ class PreisschildBar {
           await va.listenForProductTitle();
         }
         // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
-        await Future.delayed(Duration(seconds: 16)); // 24, 20
+        await Future.delayed(Duration(seconds: 14)); // 24, 20, 16
       }
       if (va.selectedItems.isNotEmpty) {
         for (ProductDao prd in va.selectedItems) {
@@ -90,7 +90,7 @@ class PreisschildBar {
             await va.listenForItemQuantityConfirmation();
           }
           // ToDo adjust delay duration with listenFor and pauseFor in speech.listen method
-          await Future.delayed(Duration(seconds: 16)); // 24, 20
+          await Future.delayed(Duration(seconds: 14)); // 24, 20, 16
         }
         await va.placeOrder();
       }

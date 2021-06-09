@@ -330,7 +330,7 @@ class VocalAssistant {
       int organizationId = 1;
       int limit = 4;
       // Product lookup in the AWS RDS
-      List<ProductDao> productsFromRDS = await productBL.get_products_by_title(1, title, , limit);
+      List<ProductDao> productsFromRDS = await productBL.get_products_by_title(1, title, weight, limit);
 
       if (productsFromRDS.isNotEmpty) {
         if (productsFromRDS.length == 1) {
@@ -418,15 +418,19 @@ class VocalAssistant {
       quantity = quantity.replaceAll("to", "two");
     }
 
-    quantity = quantity.replaceAll(RegExp(r"[(number)\s]+"), "")
-                      // .replaceAll("hundred", "").replaceAll("thousand", "")
-                      // .replaceAll(RegExp(r"[a-z]{3,5}ty"), "0").replaceAll(RegExp(r"[a-z]{3,5}teen"), "10")
-                      .replaceAll("one", "1").replaceAll("two", "2")
-                      .replaceAll("three", "3").replaceAll("four", "4")
-                      .replaceAll("five", "5").replaceAll("six", "6")
-                      .replaceAll("seven", "7").replaceAll("eight", "8")
-                      .replaceAll("nine", "9").replaceAll("ten", "10")
-                      .replaceAll("eleven", "11").replaceAll("twelve", "12");
+    quantity = quantity.replaceAll(RegExp(r"number|hundred|thousand|\s+"), "")
+                        .splitMapJoin(RegExp(r"ty"), onMatch: (m) => "", onNonMatch: (n) => n)
+                        .splitMapJoin((RegExp(r'[a-z]{4}teen')),
+                                      onMatch:    (m) => "1" + m[0].splitMapJoin(RegExp(r"teen"),
+                                          onMatch: (m) => "",
+                                          onNonMatch: (n) => n),
+                                      onNonMatch: (n) => n)
+                        .replaceAll("one", "1").replaceAll(RegExp(r"two|twen"), "2")
+                        .replaceAll(RegExp(r"three|thir"), "3").replaceAll(RegExp(r"four|for"), "4")
+                        .replaceAll(RegExp(r"five|fif"), "5").replaceAll("six", "6")
+                        .replaceAll("seven", "7").replaceAll(RegExp(r"eight|eigh"), "8")
+                        .replaceAll("nine", "9").replaceAll("ten", "10")
+                        .replaceAll("eleven", "11").replaceAll("twelve", "12");
 
     var orderItem = OrderItem(selectedProductId, int.parse(quantity));
     orderItem.unitPrice = selectedProductUnitPrice;
